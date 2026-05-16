@@ -48,7 +48,7 @@ function datasDestaSemanaBR() {
   const seg = new Date(hoje);
   seg.setDate(hoje.getDate() + diffSeg);
 
-  return Array.from({ length: 8 }, (_, i) => { // Aumentei para 8 para pegar a próxima segunda
+  return Array.from({ length: 8 }, (_, i) => {
     const d = new Date(seg);
     d.setDate(seg.getDate() + i);
     const dia = String(d.getDate()).padStart(2, "0");
@@ -56,14 +56,26 @@ function datasDestaSemanaBR() {
     return `${dia}/${mes}/${d.getFullYear()}`;
   });
 }
-// DADOS FIXOS: 
 const semana = datasDestaSemanaBR();
-// Substitua a lista de agendamentos por esta:
-let agendamentos = [
-  { id: 1, nome: "Gabrielle Lima", tel: "(61) 99845-3612", data: "16/05/2026", hora: "10:00", servico: "Escova" },
-  { id: 2, nome: "Zilda Brito Ferreira", tel: "(61) 98604-3187", data: "16/05/2026", hora: "14:30", servico: "Manicure" },
-];
-// 5. RENDERIZAÇÃO DA TABELA
+
+// ========== CARREGA AGENDAMENTOS DO SESSIONSTORAGE (ou dados padrão) ==========
+let agendamentos = (function() {
+  const salvos = sessionStorage.getItem("agendamentos");
+  if (salvos && salvos !== "[]") {
+    try {
+      return JSON.parse(salvos);
+    } catch(e) { 
+      return [];
+    }
+  }
+  // Dados iniciais padrão
+  return [
+    { id: 1, nome: "Gabrielle Lima", tel: "(61) 99845-3612", data: "16/05/2026", hora: "10:00", servico: "Escova" },
+    { id: 2, nome: "Zilda Brito Ferreira", tel: "(61) 98604-3187", data: "16/05/2026", hora: "14:30", servico: "Manicure" }
+  ];
+})();
+
+// RENDERIZAÇÃO DA TABELA
 function renderizarTabela() {
   const corpo = document.getElementById("tabelaCorpo");
   const vazia = document.getElementById("tabelaVazia");
@@ -93,7 +105,6 @@ function renderizarTabela() {
     return a.hora.localeCompare(b.hora);
   });
   ordenados.forEach(a => {
-    // 1. Pegamos a data e separamos o ano
     const partes = a.data.split("/");
     const dataComAnoIdentificado = `${partes[0]}/${partes[1]}<span class="barra-pc">/</span><span class="quebra-ano">${partes[2]}</span>`;
 
@@ -142,7 +153,7 @@ function fecharSubmenu() {
     document.getElementById("overlay")?.classList.remove("ativo");
   }
 }
-// 7. MODAL DE EDIÇÃO
+// MODAL DE EDIÇÃO
 function abrirModalAtualizar() {
   const id = parseInt(document.querySelector(".check-linha:checked")?.dataset.id);
   const ag = agendamentos.find(a => a.id === id);
@@ -162,12 +173,37 @@ function fecharModal() {
   document.getElementById("modalAtualizar").classList.remove("aberto");
 }
 
+// Máscara e trava de telefone no modal de atualizar
+document.getElementById("editTel").addEventListener("input", function () {
+  let v = this.value.replace(/\D/g, "");
+  if (v.length > 11) v = v.slice(0, 11);
+  if (v.length <= 10) {
+    v = v.replace(/^(\d{2})(\d{4})(\d{0,4})/, "($1) $2-$3");
+  } else {
+    v = v.replace(/^(\d{2})(\d{5})(\d{0,4})/, "($1) $2-$3");
+  }
+  this.value = v;
+});
+
 function salvarAtualizacao() {
   const id = parseInt(document.querySelector(".check-linha:checked")?.dataset.id);
   const nome = document.getElementById("editNome").value.trim();
   const tel = document.getElementById("editTel").value.trim();
   const hora = document.getElementById("editHora").value;
   const servico = document.getElementById("editServico").value.trim();
+  const msg = document.getElementById("msgAtualizar");
+
+  // Limpa mensagem anterior
+  msg.className = "msg";
+  msg.textContent = "";
+
+  // Validação de telefone
+  const numerosApenas = tel.replace(/\D/g, "");
+  if (numerosApenas.length < 10 || numerosApenas.length > 11) {
+    msg.textContent = "Digite um telefone válido (10 ou 11 dígitos).";
+    msg.classList.add("erro");
+    return;
+  }
 
   const dataISO = document.getElementById("editData").value;
   let dataBR = "";
@@ -187,15 +223,11 @@ function excluirSelecionados() {
   const ids = Array.from(checkboxes).map(cb => parseInt(cb.dataset.id));
   if (ids.length === 0) return;
 
-  // Atualiza o texto do modal com a quantidade
   const qtd = ids.length;
   document.getElementById("textoConfirmacaoExclusao").textContent =
     `Tem certeza que deseja excluir ${qtd} agendamento(s)? Esta ação não pode ser desfeita.`;
 
-  // Guarda os IDs para usar na confirmação
   window._idsParaExcluir = ids;
-
-  // Abre o modal estilizado (em vez do confirm() feio)
   document.getElementById("modalConfirmarExclusao").classList.add("aberto");
 }
 
@@ -206,13 +238,12 @@ function fecharModalConfirmacao() {
 
 function executarExclusao() {
   const ids = window._idsParaExcluir || [];
-  // Remove os agendamentos selecionados da lista
   agendamentos = agendamentos.filter(a => !ids.includes(a.id));
   fecharModalConfirmacao();
   renderizarTabela();
 }
 
-// Permissões - esconde itens do menu e botão Excluir para funcionária
+// Permissões
 (function aplicarPermissoes() {
   const cargo = sessionStorage.getItem("usuarioCargo");
   const restritos = ["funcionarios.html", "servico.html", "financas.html"];
@@ -225,13 +256,12 @@ function executarExclusao() {
   });
 })();
 
-// O form tem uma tendência chata de dar refresh na página sozinho
-// event.preventDefault() trava isso e deixa o código funcionar normalmente
+// Form de atualizar
 const formAtualizar = document.getElementById("formAtualizar");
 if (formAtualizar) {
   formAtualizar.addEventListener("submit", function(event) {
-    event.preventDefault(); // Trava o refresh da página
-    salvarAtualizacao(); // Chama a função que já existia
+    event.preventDefault();
+    salvarAtualizacao();
   });
 }
 

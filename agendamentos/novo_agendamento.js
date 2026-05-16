@@ -87,39 +87,45 @@ function fecharModal() {
 
 // SUBMIT DO FORMULÁRIO - Processa o agendamento
 // Por enquanto salva no sessionStorage.
-// Quando Guilherme integrar o backend, substituir por fetch POST.
 document.getElementById("formAgendamento").addEventListener("submit", function (e) {
-  e.preventDefault(); // Impede recarregar a página
+  e.preventDefault();
 
-  console.log("1 - Formulário enviado");
-  // Coleta os dados do formulário
+  // Converte data de ISO (2026-05-19) para BR (19/05/2026)
+  const dataISO = document.getElementById("data_agendamento").value;
+  const [ano, mes, dia] = dataISO.split("-");
+  const dataBR = `${dia}/${mes}/${ano}`;
+
   const dados = {
-    nome:         document.getElementById("nome_cliente").value.trim(),
-    telefone:     document.getElementById("telefone_cliente").value.trim(),
-    data:         document.getElementById("data_agendamento").value,
-    hora:         document.getElementById("hora_agendamento").value,
-    servico:      document.getElementById("servico").value.trim(),
-    colaborador: document.getElementById("colaborador").value.trim(),
-    id:           Date.now() // ID temporário baseado em timestamp
+    id: Date.now(),
+    nome: document.getElementById("nome_cliente").value.trim(),
+    tel: document.getElementById("telefone_cliente").value.trim(),
+    data: dataBR,
+    hora: document.getElementById("hora_agendamento").value,
+    servico: document.getElementById("servico").value.trim(),
+    colaborador: document.getElementById("colaborador").value.trim()
   };
 
-  // Valida data mínima - não permite datas no passado
+  // Validação de data (não pode ser passado)
   const hoje = new Date();
-  const dataSel = new Date(dados.data + "T00:00:00");
-  if (dataSel < new Date(hoje.toDateString())) {
-    document.getElementById("msgAgendamento").textContent = "⚠️ Selecione uma data a partir de hoje.";
+  hoje.setHours(0, 0, 0, 0);
+  const dataSel = new Date(dataISO); // usa o ISO original só pra comparar
+  if (dataSel < hoje) {
+    const msgDiv = document.getElementById("msgAgendamento");
+    msgDiv.textContent = "⚠️ Selecione uma data a partir de hoje.";
+    msgDiv.classList.add("show", "erro");
     return;
   }
 
-  // Salva no sessionStorage (será substituído por API)
+  // Salva no sessionStorage
   const lista = JSON.parse(sessionStorage.getItem("agendamentos") || "[]");
   lista.push(dados);
   sessionStorage.setItem("agendamentos", JSON.stringify(lista));
 
-  // Exibe o modal de sucesso
-  document.getElementById("msgAgendamento").textContent = "";
+  // Limpa mensagem e abre modal de sucesso
+  const msgDiv = document.getElementById("msgAgendamento");
+  msgDiv.classList.remove("show", "erro");
+  msgDiv.textContent = "";
   abrirModal();
 });
-
 // INICIALIZAÇÃO — Executa ao carregar a página
 carregarPerfil();

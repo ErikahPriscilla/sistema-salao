@@ -25,7 +25,7 @@
 }
 
 .textarea-obs::placeholder {
-  color: var(--text-soft);;
+  color: var(--text-soft);
 }
 
 .textarea-obs:focus {
@@ -55,10 +55,32 @@
 .popup-sucesso {
   padding: 28px 24px 24px;
   text-align: center;
+  position: relative; /* necessário para o X ficar no canto */
 }
 
 .popup-btns {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+/* Botão X para fechar o modal */
+.popup-fechar {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  color: var(--text-soft);
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px 6px;
+  border-radius: 50%;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.popup-fechar:hover {
+  color: var(--rose-gold);
+  background: rgba(212, 161, 152, 0.12);
 }

@@ -38,7 +38,7 @@ function carregarPerfil() {
   document.getElementById("perfilEmail").textContent = email;
 }
 
-//  Limpar formulário 
+// Limpar formulário
 function limparFormulario() {
   document.getElementById("nome").value         = "";
   document.getElementById("telefone").value     = "";
@@ -48,6 +48,12 @@ function limparFormulario() {
   msg.textContent = "";
 }
 
+// Fechar o pop-up de sucesso (botão X)
+function fecharPopup() {
+  document.getElementById("popupSucesso").classList.remove("aberto");
+}
+
+// Cadastrar cliente
 function cadastrarCliente() {
   const nome     = document.getElementById("nome").value.trim();
   const telefone = document.getElementById("telefone").value.trim();
@@ -56,14 +62,12 @@ function cadastrarCliente() {
   msg.className   = "msg";
   msg.textContent = "";
 
-  // LIMPEZA (Tira a máscara para contar os números)
   const numerosApenas = telefone.replace(/\D/g, "");
 
-  // 2. A TRAVA (Se não tiver 10 ou 11 dígitos, o código PARA aqui)
   if (numerosApenas.length < 10 || numerosApenas.length > 11) {
     msg.textContent = "Digite um telefone válido (10 ou 11 dígitos).";
     msg.classList.add("erro");
-    return; // <--- ISSO AQUI É O QUE TRAVA E NÃO DEIXA ABRIR O POP-UP
+    return;
   }
 
   if (!nome) {
@@ -72,9 +76,55 @@ function cadastrarCliente() {
     return;
   }
 
-  // SUCESSO - se o telefone estiver correto
+  // Abre o pop-up de sucesso
   document.getElementById("popupSucesso").classList.add("aberto");
 }
+
+// Compartilhar link da página de agendamento do cliente
+// Troque a URL abaixo pelo endereço real da sua página de agendamento
+function compartilharLink() {
+  const linkAgendamento = "https://seudominio.com.br/agendamento/agendamento-cliente.html";
+  const texto = "Faça seu agendamento no Espaço Carmem Lúcia: " + linkAgendamento;
+
+  // Tenta usar a API nativa de compartilhamento do celular (WhatsApp, etc.)
+  if (navigator.share) {
+    navigator.share({
+      title: "Agendamento — Espaço Carmem Lúcia",
+      text: "Faça seu agendamento no Espaço Carmem Lúcia!",
+      url: linkAgendamento
+    }).catch(function(err) {
+      // Usuário cancelou ou ocorreu erro — não faz nada
+      console.log("Compartilhamento cancelado:", err);
+    });
+  } else {
+    // Fallback: copia o link para a área de transferência
+    navigator.clipboard.writeText(linkAgendamento).then(function() {
+      alert("Link copiado! Cole no WhatsApp ou onde preferir:\n" + linkAgendamento);
+    }).catch(function() {
+      // Último recurso: abre o WhatsApp Web com o link
+      const urlWhatsApp = "https://wa.me/?text=" + encodeURIComponent(texto);
+      window.open(urlWhatsApp, "_blank");
+    });
+  }
+}
+
+// Máscara de telefone
+document.addEventListener("DOMContentLoaded", function() {
+  const telInput = document.getElementById("telefone");
+  if (telInput) {
+    telInput.addEventListener("input", function() {
+      let v = this.value.replace(/\D/g, "");
+      if (v.length > 11) v = v.slice(0, 11);
+      if (v.length <= 10) {
+        v = v.replace(/^(\d{2})(\d{4})(\d{0,4})/, "($1) $2-$3");
+      } else {
+        v = v.replace(/^(\d{2})(\d{5})(\d{0,4})/, "($1) $2-$3");
+      }
+      this.value = v;
+    });
+  }
+});
+
 // Permissões - esconde itens do menu restritos para funcionária
 (function aplicarPermissoes() {
   const cargo = sessionStorage.getItem("usuarioCargo");
@@ -92,9 +142,10 @@ function cadastrarCliente() {
 const formCadastro = document.getElementById("formCadastro");
 if (formCadastro) {
   formCadastro.addEventListener("submit", function(event) {
-    event.preventDefault(); // Trava o refresh da página
-    cadastrarCliente(); // 
+    event.preventDefault();
+    cadastrarCliente();
   });
 }
-// Inicializa 
+
+// Inicializa
 carregarPerfil();

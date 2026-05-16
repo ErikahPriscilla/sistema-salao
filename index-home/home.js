@@ -38,7 +38,6 @@ function carregarPerfil() {
   const nome  = sessionStorage.getItem("usuarioNome");
   const email = sessionStorage.getItem("usuarioEmail");
 
-  // Se a Erika estiver logada, mostra Erika. Se não houver ninguém, volta pro login.
   if (nome) {
     document.getElementById("avatar").textContent      = gerarIniciais(nome);
     document.getElementById("perfilNome").textContent  = nome;
@@ -59,14 +58,12 @@ function hojeFormatado() {
 // Mostra data e hora UMA VEZ, abaixo da saudação
 function mostrarData() {
   const hoje   = new Date();
-  // Formato: "Terça-feira, 12 de Maio"
   const opcoes = { weekday: "long", day: "2-digit", month: "long" };
   const texto  = hoje.toLocaleDateString("pt-BR", opcoes);
   const hora   = hoje.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
 
   const el = document.getElementById("dataHoje");
   if (el) {
-    // Capitaliza a primeira letra e adiciona a hora
     el.textContent = texto.charAt(0).toUpperCase() + texto.slice(1) + " · " + hora;
   }
 }
@@ -78,13 +75,13 @@ function saudacao() {
   document.querySelector(".sub").textContent = msg;
 }
 
-//  Dados - mesmos do agendamentos.js (futuramente virão do banco) 
+// Dados - exemplo (futuramente virão do backend)
 const agendamentosDados = [
   { nome: "Gabrielle Lima", hora: "10:00", servico: "Escova",   data: "16/05/2026", funcionario: "Carmem Lúcia" },
   { nome: "Zilda Brito",    hora: "14:30", servico: "Manicure", data: "16/05/2026", funcionario: "Erika"        },
 ];
 
-//  Carrega só os agendamentos do dia atual, filtrados pelo cargo 
+// Carrega só os agendamentos do dia atual, filtrados pelo cargo 
 function carregarAgendamentosHoje() {
   const lista = document.getElementById("listaHome");
   if (!lista) return;
@@ -93,10 +90,8 @@ function carregarAgendamentosHoje() {
   const cargo = sessionStorage.getItem("usuarioCargo");
   const nome  = sessionStorage.getItem("usuarioNome") || "";
 
-  // Filtra por data primeiro
   let deHoje = agendamentosDados.filter(a => a.data === hoje);
 
-  // Se for funcionária (não proprietária), mostra só os agendamentos dela
   if (cargo !== "proprietaria") {
     deHoje = deHoje.filter(a =>
       a.funcionario.toLowerCase().includes(nome.split(" ")[0].toLowerCase())
@@ -136,15 +131,33 @@ function carregarLucroHoje() {
 
   lista.innerHTML = "";
 
-  // Dados de lucro (proprietária vê ambos, funcionária vê só a dela)
   const cargo = sessionStorage.getItem("usuarioCargo");
-  
+  const nomeUsuario = sessionStorage.getItem("usuarioNome") || "";
+
   const lucroDados = [
-    { nome: "Carmem", valor: "R$ 600,00", servicos: "4 serviços" },
-    { nome: "Erika", valor: "R$ 200,00", servicos: "2 serviços" }
+    { nome: "Carmem", valor: "R$ 600,00", servicos: "4 serviços", valorNumerico: 600.00 },
+    { nome: "Erika",  valor: "R$ 200,00", servicos: "2 serviços", valorNumerico: 200.00 }
   ];
 
-  const mostra = cargo === "proprietaria" ? lucroDados : [lucroDados[1]];
+  let mostra = [];
+  let totalFuncionario = 0;
+
+  if (cargo === "proprietaria") {
+    mostra = lucroDados;
+  } else {
+    mostra = lucroDados.filter(l => nomeUsuario.toLowerCase().includes(l.nome.toLowerCase()));
+    if (mostra.length > 0) {
+      totalFuncionario = mostra[0].valorNumerico;
+    }
+  }
+
+  if (mostra.length === 0) {
+    const li = document.createElement("li");
+    li.className = "card-item-vazio";
+    li.textContent = "Nenhum lucro registrado para este funcionário.";
+    lista.appendChild(li);
+    return totalFuncionario;
+  }
 
   mostra.forEach(l => {
     const li = document.createElement("li");
@@ -158,33 +171,48 @@ function carregarLucroHoje() {
     `;
     lista.appendChild(li);
   });
+
+  return totalFuncionario;
 }
 
 function toggleLucro() {
-  // Pega os elementos da tela
-  const el = document.getElementById("lucroValor");      // onde fica o R$ 800,00
-  const lista = document.getElementById("listaLucro");  // onde fica Carmem e funcionario
-  const icone = document.getElementById("iconOlho");    // ícone do olho
-  
-  // Verifica se o olho está ABERTO 
+  const el = document.getElementById("lucroValor");
+  const lista = document.getElementById("listaLucro");
+  const icone = document.getElementById("iconOlho");
   const aberto = icone.classList.contains("fa-eye");
+  const cargo = sessionStorage.getItem("usuarioCargo");
+  const nomeUsuario = sessionStorage.getItem("usuarioNome") || "";
 
   if (aberto) {
-    // Olho aberto - FECHA (esconde os valores)
-    el.textContent = "";                 // apaga o valor total
-    lista.innerHTML = "";               // apaga os detalhes 
-    icone.classList.replace("fa-eye", "fa-eye-slash");  // muda ícone para olho FECHADO
+    el.textContent = "";
+    lista.innerHTML = "";
+    icone.classList.replace("fa-eye", "fa-eye-slash");
   } else {
-    // Olho fechado - ABRE (mostra os valores)
-    el.textContent = "R$ 800,00";           // mostra o valor total 
-    carregarLucroHoje();                    // chama função que mostra Carmem e funcionario
-    icone.classList.replace("fa-eye-slash", "fa-eye");   // muda ícone para olho ABERTO
+    // Abrir olho
+    if (cargo === "proprietaria") {
+      el.textContent = "R$ 800,00";
+      carregarLucroHoje(); // carrega todos os detalhes
+    } else {
+      // Funcionária: calcula o próprio total
+      const lucroDados = [
+        { nome: "Carmem", valorNumerico: 600.00 },
+        { nome: "Erika",  valorNumerico: 200.00 }
+      ];
+      const funcionario = lucroDados.find(l => nomeUsuario.toLowerCase().includes(l.nome.toLowerCase()));
+      if (funcionario) {
+        el.textContent = `R$ ${funcionario.valorNumerico.toFixed(2).replace('.', ',')}`;
+      } else {
+        el.textContent = "";
+      }
+      carregarLucroHoje(); // carrega apenas os detalhes da funcionária
+    }
+    icone.classList.replace("fa-eye-slash", "fa-eye");
   }
 }
+
 // Permissões - esconde itens do menu restritos para funcionária
 (function aplicarPermissoes() {
   const cargo = sessionStorage.getItem("usuarioCargo");
-  // Lista de páginas que só a proprietária pode acessar pelo menu lateral
   const restritos = ["funcionarios.html", "servico.html", "financas.html"];
   if (cargo === "proprietaria") return;
   document.querySelectorAll(".sidebar-menu a").forEach(function(link) {
@@ -195,25 +223,14 @@ function toggleLucro() {
   });
 })();
 
-// CONTROLE DE VISIBILIDADE 
-// Somente a proprietária (cargo === "proprietaria") tem acesso
-// à tela de Finanças. Para funcionários, o link é ocultado.
-// O cargo vem do sessionStorage, gravado no momento do login.
+// CONTROLE DE VISIBILIDADE - Link "Ver detalhes" só para proprietária
 (function controlarLinkFinancas() {
   const cargo = sessionStorage.getItem("usuarioCargo");
   const linkDetalhes = document.getElementById("link-ver-detalhes");
-
-  // Se o elemento existir na tela e o usuário NÃO for proprietária, esconde
   if (linkDetalhes && cargo !== "proprietaria") {
     linkDetalhes.style.display = "none";
   }
 })();
-
-// Inicializa 
-mostrarData();
-saudacao();
-carregarPerfil();
-carregarAgendamentosHoje();
 
 // BOTÃO WHATSAPP - ENVIA AGENDAMENTOS DO DIA PARA A CARMEM
 const btnWhatsHome = document.querySelector(".btn-whats");
@@ -237,3 +254,9 @@ if (btnWhatsHome) {
     window.open(`https://wa.me/${telefoneCarmem}?text=${encodeURIComponent(msg)}`, "_blank");
   };
 }
+
+// Inicializa 
+mostrarData();
+saudacao();
+carregarPerfil();
+carregarAgendamentosHoje();

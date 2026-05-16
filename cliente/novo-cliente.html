@@ -15,7 +15,7 @@
 <body>
 
   <!-- overlay do menu lateral -->
-    <div class="overlay" id="overlay" onclick="fecharMenu()"></div>
+  <div class="overlay" id="overlay" onclick="fecharMenu()"></div>
 
   <nav class="sidebar" id="sidebar">
     <div class="sidebar-header">
@@ -35,7 +35,7 @@
   <main class="phone">
 
     <!-- topbar igual às outras telas -->
-        <header class="topbar">
+    <header class="topbar">
       <div class="topbar-logo">
         <a href="../index-home/home.html"><img src="../img/logo.png" alt="Logo CL" /></a>
       </div>
@@ -102,6 +102,12 @@
   <!-- pop-up de sucesso -->
   <div class="modal-overlay" id="popupSucesso">
     <div class="modal popup-sucesso">
+
+      <!-- ✕ Botão fechar no canto superior direito -->
+      <button class="popup-fechar" onclick="fecharPopup()" aria-label="Fechar">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
       <div class="popup-icone">
         <i class="fa-solid fa-circle-check"></i>
       </div>
@@ -112,6 +118,10 @@
         </button>
         <button class="btn-form-limpar" onclick="window.location.href='../index-home/home.html'">
           <i class="fa-solid fa-house"></i> Tela Inicial
+        </button>
+        <!-- Botão compartilhar — mesmo estilo dos outros, mas funcional -->
+        <button type="button" class="btn-form-limpar" onclick="compartilharLink()">
+          <i class="fa-solid fa-share-nodes"></i> Compartilhar link de agendamento
         </button>
       </div>
     </div>

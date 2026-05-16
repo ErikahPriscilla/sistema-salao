@@ -19,6 +19,37 @@ function limparFormulario() {
   msg.textContent = "";
 }
 
+// Horário de funcionamento: terça a sábado, 07:00 às 18:00
+(function configurarCampoData() {
+  const campoData = document.getElementById("dataAgend");
+  const campoHora = document.getElementById("horaAgend");
+
+  // Data mínima = hoje
+  const hoje = new Date();
+  const dd = String(hoje.getDate()).padStart(2, "0");
+  const mm = String(hoje.getMonth() + 1).padStart(2, "0");
+  campoData.min = `${hoje.getFullYear()}-${mm}-${dd}`;
+
+  // Limitar horário entre 07:00 e 18:00
+  campoHora.min = "07:00";
+  campoHora.max = "18:00";
+
+  // Quando o cliente escolher uma data, checar se é domingo ou segunda
+  campoData.addEventListener("change", function() {
+    if (!this.value) return;
+    const diaSemana = new Date(this.value + "T12:00").getDay();
+    const msg = document.getElementById("msgAgendamento");
+    if (diaSemana === 0 || diaSemana === 1) {
+      msg.textContent = "O salão não funciona aos domingos e segundas. Escolha outro dia.";
+      msg.classList.add("show", "erro");
+      this.value = "";
+    } else {
+      msg.className = "msg";
+      msg.textContent = "";
+    }
+  });
+})();
+
 // Validar e abrir modal
 function agendar() {
   const nome    = document.getElementById("nomeCliente").value.trim();
@@ -34,14 +65,31 @@ function agendar() {
 
   if (!nome || !tel || !data || !hora || !servico || !func) {
     msg.textContent = "Preencha todos os campos para agendar.";
-    msg.classList.add("erro");
+    msg.classList.add("show", "erro");
     return;
   }
 
   const nums = tel.replace(/\D/g, "");
   if (nums.length < 10 || nums.length > 11) {
     msg.textContent = "Telefone deve ter entre 10 e 11 dígitos.";
-    msg.classList.add("erro");
+    msg.classList.add("show", "erro");
+    return;
+  }
+
+  // Validar dia da semana
+  const diaSemana = new Date(data + "T12:00").getDay();
+  if (diaSemana === 0 || diaSemana === 1) {
+    msg.textContent = "O salão não funciona aos domingos e segundas. Escolha outro dia.";
+    msg.classList.add("show", "erro");
+    return;
+  }
+
+  // Validar horário 07:00 às 18:00
+  const [h, m] = hora.split(":").map(Number);
+  const minutos = h * 60 + m;
+  if (minutos < 7 * 60 || minutos > 18 * 60) {
+    msg.textContent = "O salão funciona das 07:00 às 18:00. Escolha um horário dentro desse período.";
+    msg.classList.add("show", "erro");
     return;
   }
 
