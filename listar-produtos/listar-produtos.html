@@ -58,24 +58,15 @@
     </div>
     <section class="filtros">
       <div class="filtro-periodo">
-        <select id="selectMes" class="select-periodo" onchange="mudouMes()">
-          <option value="">Mês</option>
-          <option value="01">Janeiro</option>
-          <option value="02">Fevereiro</option>
-          <option value="03">Março</option>
-          <option value="04">Abril</option>
-          <option value="05">Maio</option>
-          <option value="06">Junho</option>
-          <option value="07">Julho</option>
-          <option value="08">Agosto</option>
-          <option value="09">Setembro</option>
-          <option value="10">Outubro</option>
-          <option value="11">Novembro</option>
-          <option value="12">Dezembro</option>
-        </select>
-        <select id="selectAno" class="select-periodo" style="display: none;" onchange="aplicar()">
-          <option value="">Ano</option>
-        </select>
+        <div class="filtro-data-wrap">
+          <label class="filtro-label">De</label>
+          <input type="date" id="dataInicio" class="select-periodo input-data" onchange="validarDatas()"/>
+        </div>
+        <div class="filtro-data-wrap">
+          <label class="filtro-label">Até</label>
+          <input type="date" id="dataFim" class="select-periodo input-data" onchange="validarDatas()"/>
+        </div>
+        <button class="btn-limpar-data" onclick="limparDatas()">Limpar</button>
       </div>
       <div class="filtro-tipo">
         <button class="ftbtn ativo" onclick="setTipo('todos', this)">Todos</button>
@@ -83,9 +74,8 @@
         <button class="ftbtn" onclick="setTipo('saida', this)">Saídas</button>
       </div>
     </section>
-    <button class="btn-exportar" onclick="exportarPDF()">
-      <i class="fa-solid fa-file-arrow-down"></i> Exportar Extrato PDF
-    </button>
+    <!-- AVISO: aparece quando "De" > "Até" e some após 3 segundos -->
+    <p id="avisoData" style="display:none;margin:0 16px 4px;padding:8px 14px;background:#fff3e0;border-left:3px solid var(--rose-gold-dark);border-radius:8px;font-family:'Jost',sans-serif;font-size:0.8rem;color:var(--rose-gold-dark);">⚠️ As datas foram trocadas automaticamente.</p>
     <section class="lista-wrap" id="listaTransacoes">
       <p class="lista-vazia">Nenhuma transação encontrada.</p>
     </section>

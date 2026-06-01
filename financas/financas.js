@@ -1,6 +1,5 @@
-// FINANCAS.JS
-// Lógica da tela principal de finanças.
 
+// Lógica da tela principal de finanças.
 // Menu lateral 
 function abrirMenu() {
   document.getElementById("sidebar").classList.add("aberta");
@@ -51,9 +50,8 @@ function carregarPerfil() {
   });
 })();
 
-//  Meus Ganhos (card 1) 
-// Mostra apenas os ganhos da proprietária (Carmem).
-// Total aparece no TOPO (igual ao segundo card).
+//  Meus Ganhos - Mostra apenas os ganhos da proprietária
+// Total aparece no TOPO
 function carregarLucroDia() {
   const lista = document.getElementById("listaLucroDia");
   if (!lista) return;
@@ -109,8 +107,7 @@ function toggleLucroDia() {
   }
 }
 
-// Lucro do Salão (card 2) 
-// Proprietária vê todos os profissionais + total geral no topo.
+// Lucro do Salão - Proprietária vê todos os profissionais + total geral no topo.
 function carregarLucroMes() {
   const lista = document.getElementById("listaLucroMes");
   if (!lista) return;
@@ -165,5 +162,4 @@ function toggleLucroMes() {
   }
 }
 
-// nicializa
 carregarPerfil();

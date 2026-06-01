@@ -31,10 +31,9 @@
     </ul>
   </nav>
 
-  
   <main class="phone">
 
-        <header class="topbar">
+    <header class="topbar">
       <div class="topbar-logo">
         <a href="../index-home/home.html"><img src="../img/logo.png" alt="Logo CL" /></a>
       </div>
@@ -57,12 +56,11 @@
       </div>
     </header>
 
-    <!-- Cabeçalho com botão voltar -->
     <div class="tela-header">
       <button class="btn-voltar" onclick="history.back()" aria-label="Voltar">
         <i class="fa-solid fa-arrow-left"></i>
       </button>
-      <h2 class="tela-titulo">Relatório de Serviço</h2>
+      <h2 class="tela-titulo">Relatório de Serviços</h2>
     </div>
 
     <!-- Cards de totais -->
@@ -87,13 +85,37 @@
       <span class="rel-saldo-valor" id="saldoLiquido">R$ 0,00</span>
     </div>
 
-    <!-- Pesquisa e filtros -->
+    <!-- BOTÃO EXPORTAR PDF -->
+    <div class="btn-exportar-wrap">
+      <button class="btn-exportar" onclick="exportarPDF()">
+        <i class="fa-solid fa-file-arrow-down"></i> Exportar Extrato PDF
+      </button>
+    </div>
+
+    <!-- Filtros (apenas mês/ano) -->
     <section class="rel-acoes">
-      <div class="clientes-pesquisa">
-        <i class="fa-solid fa-magnifying-glass pesquisa-icone"></i>
-        <input type="text" id="campoPesquisa" class="input-pesquisa"
-          placeholder="Pesquisar anotação ou data..." oninput="aplicarFiltros()" />
+      <div class="filtro-periodo">
+        <select id="selectMes" class="select-periodo" onchange="mudouMes()">
+          <option value="">Mês</option>
+          <option value="01">Janeiro</option>
+          <option value="02">Fevereiro</option>
+          <option value="03">Março</option>
+          <option value="04">Abril</option>
+          <option value="05">Maio</option>
+          <option value="06">Junho</option>
+          <option value="07">Julho</option>
+          <option value="08">Agosto</option>
+          <option value="09">Setembro</option>
+          <option value="10">Outubro</option>
+          <option value="11">Novembro</option>
+          <option value="12">Dezembro</option>
+        </select>
+
+        <select id="selectAno" class="select-periodo" style="display: none;" onchange="aplicarFiltros()">
+          <option value="">Ano</option>
+        </select>
       </div>
+
       <div class="rel-filtros">
         <button class="rel-filtro-btn ativo" onclick="setFiltro('todos', this)">Todos</button>
         <button class="rel-filtro-btn" onclick="setFiltro('entrada', this)">Entradas</button>
@@ -102,15 +124,12 @@
     </section>
 
     <!-- Lista de transações -->
-    <section class="rel-lista" id="listaTransacoes">
-      <!-- preenchida pelo JS -->
-    </section>
+    <section class="rel-lista" id="listaTransacoes"></section>
 
     <p class="tabela-vazia" id="listaVazia" style="display:none;">
       Nenhuma transação encontrada.
     </p>
 
-    <!-- Botão excluir -->
     <div class="rel-rodape">
       <button class="btn-excluir" id="btnExcluir" onclick="excluirSelecionados()" disabled>
         <i class="fa-solid fa-trash"></i> Excluir
@@ -119,7 +138,6 @@
 
   </main>
 
-  
   <!-- Modal: Confirmar Exclusão -->
   <div class="modal-overlay" id="modalConfirmarExcluir">
     <div class="modal">
@@ -150,6 +168,7 @@
       </div>
     </div>
   </div>
-<script src="relatorio-servicos.js"></script>
+
+  <script src="relatorio-servicos.js"></script>
 </body>
 </html>

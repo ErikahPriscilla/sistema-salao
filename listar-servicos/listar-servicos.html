@@ -57,29 +57,16 @@
       <h2 class="tela-titulo">Histórico de Serviços</h2>
     </div>
     <section class="filtros">
-    <div class="filtro-periodo">
-  <select id="selectMes" class="select-periodo" onchange="mudouMes()">
-    <option value="">Mês</option>
-    <option value="01">Janeiro</option>
-    <option value="02">Fevereiro</option>
-    <option value="03">Março</option>
-    <option value="04">Abril</option>
-    <option value="05">Maio</option>
-    <option value="06">Junho</option>
-    <option value="07">Julho</option>
-    <option value="08">Agosto</option>
-    <option value="09">Setembro</option>
-    <option value="10">Outubro</option>
-    <option value="11">Novembro</option>
-    <option value="12">Dezembro</option>
-  </select>
-  
-  <select id="selectAno" class="select-periodo" style="display: none;" onchange="aplicar()">
-    <option value="">Ano</option>
-    <option value="2026">2026</option>
-    <option value="2027">2027</option>
-  </select>
-</div>
+      <div class="filtro-periodo">
+        <div class="filtro-data-wrap">
+          <label class="filtro-label">De</label>
+          <input type="date" id="dataInicio" class="select-periodo input-data" onchange="aplicar()"/>
+        </div>
+        <div class="filtro-data-wrap">
+          <label class="filtro-label">Até</label>
+          <input type="date" id="dataFim" class="select-periodo input-data" onchange="aplicar()"/>
+        </div>
+        <button class="btn-limpar-data" onclick="limparDatas()">Limpar</button>
       </div>
       <div class="filtro-tipo">
         <button class="ftbtn ativo" onclick="setTipo('todos', this)">Todos</button>
@@ -87,9 +74,6 @@
         <button class="ftbtn" onclick="setTipo('saida', this)">Saídas</button>
       </div>
     </section>
-    <button class="btn-exportar" onclick="exportarPDF()">
-      <i class="fa-solid fa-file-arrow-down"></i> Exportar Extrato PDF
-    </button>
     <section class="lista-wrap" id="listaTransacoes">
       <p class="lista-vazia">Nenhuma transação encontrada.</p>
     </section>
