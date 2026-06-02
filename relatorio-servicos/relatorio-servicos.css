@@ -1,3 +1,7 @@
+/* CSS COMPARTILHADO nas três telas de relatório
+  relatorio-servicos (dono do arquivo) os outros aponta pra cá via ../relatorio-servicos/relatorio-servicos.css
+  Se precisar mudar o visual dos relatórios, muda só aqui e muda nos três. */
+
 /* CARDS DE RESUMO — Entradas e Saídas*/
 .rel-resumo {
   display: grid;
@@ -300,9 +304,7 @@
   opacity: 1;
 }
 
-/* ============================================================
-   CELULAR - ajustes mínimos
-============================================================ */
+/* CELULAR  */
 @media (max-width: 480px) {
   .transacao-item {
     padding: 13px 12px;

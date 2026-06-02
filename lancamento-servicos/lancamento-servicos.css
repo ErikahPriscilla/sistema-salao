@@ -1,4 +1,8 @@
-/* ÁREA DE LANÇAMENTO */
+ /* CSS COMPARTILHADO nas três telas de lançamento
+  lancamento-servicos (dono do arquivo), os outros apontam pra cá via ../lancamento-servicos/lancamento-servicos.css
+  Se precisar mudar o visual dos lançamentos, muda só aqui e muda nos três. */
+
+ /* ÁREA DE LANÇAMENTO */
 .lancamento-wrap {
   background: linear-gradient(160deg, var(--bg-card-claro), var(--bg-card-base));
   border-radius: var(--radius-lg);
@@ -129,7 +133,9 @@
   padding: 0 20px;
 }
 
-.btn-acao {
+.btn-acao,
+.btn-relatorio,
+.btn-listar {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -149,7 +155,9 @@
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.btn-acao:hover {
+.btn-acao:hover,
+.btn-relatorio:hover,
+.btn-listar:hover {
   transform: translateY(-2px);
   box-shadow: 0 12px 28px rgba(212, 161, 152, 0.42);
 }
@@ -343,7 +351,9 @@
     margin: 0 auto;
   }
   
-  .btn-acao {
+  .btn-acao,
+  .btn-relatorio,
+  .btn-listar {
     padding: 14px 28px;
     font-size: 0.95rem;
   }

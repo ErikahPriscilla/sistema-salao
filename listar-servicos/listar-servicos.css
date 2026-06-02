@@ -1,4 +1,6 @@
-/*  LISTAR-SERVICOS.CSS - Tela de histórico de lançamentos de SERVIÇOS*/
+/* CSS COMPARTILHADO nas três telas de listagem
+   listar-servicos (dono do arquivo), os outros apontam pra cá via ../listar-servicos/listar-servicos.css
+   Se precisar mudar o visual das listagens, muda só aqui e muda nos três. */
 
 /* Caixa que agrupa o seletor de período e os botões de tipo  */
 .filtros {

@@ -90,12 +90,6 @@ body {
   object-fit: contain;
   filter: drop-shadow(0 2px 6px rgba(176, 138, 138, 0.3));
 }
-.topbar-nome {
-  font-family: 'Pinyon Script', cursive;
-  font-size: 1.4rem;
-  color: var(--rose-gold-dark);
-  line-height: 1;
-}
 .topbar-right {
   display: flex;
   align-items: center;
@@ -256,7 +250,7 @@ body {
 .perfil-sair:hover {
   background: var(--cream);
 }
-/* 6. COMPONENTES REUTILIZÁVEIS (BOTÕES E FORMS) - Pessoal, usem estas classes abaixo nas telas de vocês para
+/* 6. COMPONENTES REUTILIZÁVEIS (BOTÕES E FORMS) - usem estas classes abaixo nas telas de vocês para
  manter o padrão! */
 .tela-header {
   display: flex;
@@ -533,19 +527,6 @@ body {
   display: flex;
   justify-content: flex-end;
 }
-.modal-aviso {
-  text-align: center;
-  font-size: 0.88rem;
-  color: var(--text-soft);
-  line-height: 1.7;
-  padding: 8px 0;
-}
-.modal-aviso i {
-  display: block;
-  font-size: 1.6rem;
-  color: var(--rose-gold);
-  margin-bottom: 10px;
-}
 /* 9. BANNER, CARD E MENSAGENS - Usados no login, agendamento e qualquer tela com este layout de banner + card */
 /* Banner do topo */
 .banner {
@@ -648,7 +629,7 @@ body {
   color: var(--text);
 }
 
-/* Mensagens de feedback — use class="msg erro" ou class="msg ok"
+/* Mensagens de feedback - use class="msg erro" ou class="msg ok"
    Para mostrar, adicione também a classe "show": msg.classList.add("show","erro") */
 .msg {
   display: none;
@@ -662,7 +643,8 @@ body {
 }
 .msg.show  { display: block; }
 .msg.erro  { display: block; background: #fdeaea; color: #a34747; border-left-color: #dc3545; }
-.msg.ok    { display: block; background: #e8f5ea; color: #2f7a45; border-left-color: #28a745; }
+.msg.ok      { display: block; background: #e8f5ea; color: #2f7a47; border-left-color: #28a745; }
+.msg.sucesso { display: block; background: #e8f5ea; color: #2f7a47; border-left-color: #28a745; } /* alias de .msg.ok */
 
 /* Responsivo do card em telas maiores */
 @media (min-width: 768px) {
@@ -727,13 +709,6 @@ body {
   white-space: nowrap !important;
 }
 
-/* col-truncar: coloca os ... se o texto for muito longo */
-.col-truncar {
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  max-width: 140px; /* Podes ajustar este tamanho se quiseres os nomes mais longos */
-}
 
 /* Alinha o título e o número no meio */
 .text-center {
