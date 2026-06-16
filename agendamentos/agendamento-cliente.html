@@ -48,14 +48,16 @@
           <input type="tel" id="telCliente" name="telCliente" maxlength="15" placeholder="Digite seu número" />
         </div>
 
-        <div class="field">
-          <label for="dataAgend">Data</label>
-          <input type="date" id="dataAgend" name="dataAgend" />
-        </div>
-
-        <div class="field">
-          <label for="horaAgend">Hora</label>
-          <input type="time" id="horaAgend" name="horaAgend" />
+        <!-- Data e Hora lado a lado — reduz o tamanho vertical do card -->
+        <div class="field-row">
+          <div class="field">
+            <label for="dataAgend">Data</label>
+            <input type="date" id="dataAgend" name="dataAgend" />
+          </div>
+          <div class="field">
+            <label for="horaAgend">Hora</label>
+            <input type="time" id="horaAgend" name="horaAgend" />
+          </div>
         </div>
 
         <div class="field">
@@ -94,7 +96,7 @@
 
   </main>
 
-  <!-- BOTÃO ACESSIBILIDADE FIXO — fora do <main> para position:fixed funcionar certo -->
+  <!-- BOTÃO ACESSIBILIDADE -->
   <button class="btn-acessibilidade-fixo" id="btnAcess"
           onclick="toggleAcessibilidade()"
           aria-label="Acessibilidade"

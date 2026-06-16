@@ -1,8 +1,6 @@
 // HOME.JS - Tela inicial do sistema Espaço Carmem Lúcia
-// Responsável por: saudação, cards de agendamentos e lucro,
-// controle de permissões por perfil e menu lateral.
 
-// MENU LATERAL - Abre o menu deslizante ao clicar no hambúrguer
+// MENU LATERAL
 function abrirMenu() {
   document.getElementById("sidebar").classList.add("aberta");
   document.getElementById("overlay").classList.add("ativo");
@@ -17,7 +15,7 @@ document.addEventListener("keydown", function (e) {
   if (e.key === "Escape") fecharMenu();
 });
 
-// Avatar / dropdown de perfil 
+// Avatar / dropdown de perfil
 function togglePerfil(event) {
   event.stopPropagation();
   document.getElementById("perfilDropdown").classList.toggle("aberto");
@@ -47,7 +45,7 @@ function carregarPerfil() {
   }
 }
 
-// Data de hoje no formato DD/MM/AAAA 
+// Data de hoje no formato DD/MM/AAAA
 function hojeFormatado() {
   const d   = new Date();
   const dia = String(d.getDate()).padStart(2, "0");
@@ -55,7 +53,7 @@ function hojeFormatado() {
   return `${dia}/${mes}/${d.getFullYear()}`;
 }
 
-// Mostra data e hora UMA VEZ, abaixo da saudação
+// Mostra data e hora abaixo da saudação
 function mostrarData() {
   const hoje   = new Date();
   const opcoes = { weekday: "long", day: "2-digit", month: "long" };
@@ -68,20 +66,32 @@ function mostrarData() {
   }
 }
 
-// Saudação por horário 
+// Saudação por horário
 function saudacao() {
   const h   = new Date().getHours();
   const msg = h < 12 ? "Bom dia!" : h < 18 ? "Boa tarde!" : "Boa noite!";
   document.querySelector(".sub").textContent = msg;
 }
 
-// Dados - exemplo (futuramente virão do backend)
+// Retorna "Primeiro Sobrenome" — se o nome for muito longo corta com ...
+function nomeResumido(nomeCompleto) {
+  if (!nomeCompleto) return "";
+  const partes = nomeCompleto.trim().split(/\s+/);
+  if (partes.length <= 2) return nomeCompleto; // já é curto, mostra tudo
+  // Mais de 2 partes: mostra primeiro + último sobrenome
+  return partes[0] + " " + partes[partes.length - 1];
+}
+
+// Dados (futuramente virão do backend)
 const agendamentosDados = [
-  { nome: "Gabrielle Lima", hora: "10:00", servico: "Escova",   data: "16/05/2026", funcionario: "Carmem Lúcia" },
-  { nome: "Zilda Brito",    hora: "14:30", servico: "Manicure", data: "16/05/2026", funcionario: "Erika"        },
+  { nome: "Gabrielle Lima",  tel: "61999990001", hora: "09:00", servico: "Escova",            data: "07/06/2026", funcionario: "Carmem Lúcia" },
+  { nome: "Zilda Brito",     tel: "61999990002", hora: "10:30", servico: "Manicure",          data: "07/06/2026", funcionario: "Erika"        },
+  { nome: "Gabriel Santos",  tel: "61999990004", hora: "11:00", servico: "Corte de Cabelo",   data: "07/06/2026", funcionario: "Carmem Lúcia" },
+  { nome: "Yan Cruz",        tel: "61999990003", hora: "14:00", servico: "Corte Masculino",   data: "07/06/2026", funcionario: "Carmem Lúcia" },
+  { nome: "Guilherme Souza", tel: "61999990005", hora: "15:30", servico: "Corte e Barba",     data: "07/06/2026", funcionario: "Erika"        },
 ];
 
-// Carrega só os agendamentos do dia atual, filtrados pelo cargo 
+// Carrega agendamentos do dia
 function carregarAgendamentosHoje() {
   const lista = document.getElementById("listaHome");
   if (!lista) return;
@@ -100,6 +110,11 @@ function carregarAgendamentosHoje() {
 
   deHoje.sort((a, b) => a.hora.localeCompare(b.hora));
 
+  // No mobile limita a 4 agendamentos — a usuária clica "Ver todos" para ver o resto
+  const isMobile = window.innerWidth < 768;
+  const limite   = isMobile ? 5 : deHoje.length;
+  const deHojeLimitado = deHoje.slice(0, limite);
+
   lista.innerHTML = "";
 
   if (deHoje.length === 0) {
@@ -110,21 +125,44 @@ function carregarAgendamentosHoje() {
     return;
   }
 
-  deHoje.forEach(a => {
+  deHojeLimitado.forEach(a => {
     const li = document.createElement("li");
     li.className = "card-item";
+
+    // Tudo dentro do card-item:
+    // Linha 1: hora + nome + WhatsApp (sempre dentro da área com borda)
+    // Linha 2: serviço (alinhado abaixo do nome via padding-left)
     li.innerHTML = `
-      <span class="card-item-hora">${a.hora}</span>
-      <span class="card-item-texto">
-        <span class="card-item-nome">${a.nome}</span>
-        <span class="card-item-servico">${a.servico}</span>
-      </span>
+      <div class="card-item-linha">
+        <span class="card-item-hora">${a.hora}</span>
+        <span class="card-item-nome">${nomeResumido(a.nome)}</span>
+        <!-- WhatsApp mobile: dentro da linha (some no PC via CSS) -->
+        <a class="btn-whats-item"
+           href="https://wa.me/${a.tel || ''}"
+           target="_blank"
+           title="WhatsApp de ${a.nome}"
+           aria-label="WhatsApp de ${a.nome}"
+           style="margin-left:auto; flex-shrink:0;">
+          <i class="fa-brands fa-whatsapp" style="font-size:0.85rem;"></i>
+        </a>
+      </div>
+      <!-- Serviço: linha de baixo no mobile, inline no PC -->
+      <span class="card-item-servico">${a.servico}</span>
+      <!-- WhatsApp desktop: aparece no FINAL da linha (some no mobile via CSS) -->
+      <a class="btn-whats-item btn-whats-desktop"
+         href="https://wa.me/${a.tel || ''}"
+         target="_blank"
+         title="WhatsApp de ${a.nome}"
+         aria-label="WhatsApp de ${a.nome}"
+         style="display:none; margin-left:auto; flex-shrink:0;">
+        <i class="fa-brands fa-whatsapp" style="font-size:0.85rem;"></i>
+      </a>
     `;
     lista.appendChild(li);
   });
 }
 
-// Lucro do dia - VAZIO QUANDO FECHA, TUDO QUANDO ABRE
+// Lucro do dia
 function carregarLucroHoje() {
   const lista = document.getElementById("listaLucro");
   if (!lista) return;
@@ -146,9 +184,7 @@ function carregarLucroHoje() {
     mostra = lucroDados;
   } else {
     mostra = lucroDados.filter(l => nomeUsuario.toLowerCase().includes(l.nome.toLowerCase()));
-    if (mostra.length > 0) {
-      totalFuncionario = mostra[0].valorNumerico;
-    }
+    if (mostra.length > 0) totalFuncionario = mostra[0].valorNumerico;
   }
 
   if (mostra.length === 0) {
@@ -163,11 +199,11 @@ function carregarLucroHoje() {
     const li = document.createElement("li");
     li.className = "card-item";
     li.innerHTML = `
-      <span class="card-item-hora" style="font-weight:600; color:var(--rose-gold-dark);">${l.valor}</span>
-      <div class="card-item-texto">
+      <div class="card-item-linha">
+        <span class="card-item-hora">${l.valor}</span>
         <span class="card-item-nome">${l.nome}</span>
-        <span class="card-item-servico">${l.servicos}</span>
       </div>
+      <span class="card-item-servico">${l.servicos}</span>
     `;
     lista.appendChild(li);
   });
@@ -188,12 +224,10 @@ function toggleLucro() {
     lista.innerHTML = "";
     icone.classList.replace("fa-eye", "fa-eye-slash");
   } else {
-    // Abrir olho
     if (cargo === "proprietaria") {
       el.textContent = "R$ 800,00";
-      carregarLucroHoje(); // carrega todos os detalhes
+      carregarLucroHoje();
     } else {
-      // Funcionária: calcula o próprio total
       const lucroDados = [
         { nome: "Carmem", valorNumerico: 600.00 },
         { nome: "Erika",  valorNumerico: 200.00 }
@@ -204,13 +238,13 @@ function toggleLucro() {
       } else {
         el.textContent = "";
       }
-      carregarLucroHoje(); // carrega apenas os detalhes da funcionária
+      carregarLucroHoje();
     }
     icone.classList.replace("fa-eye-slash", "fa-eye");
   }
 }
 
-// Permissões - esconde itens do menu restritos para funcionária
+// Permissões
 (function aplicarPermissoes() {
   const cargo = sessionStorage.getItem("usuarioCargo");
   const restritos = ["funcionarios.html", "servico.html", "financas.html"];
@@ -223,7 +257,7 @@ function toggleLucro() {
   });
 })();
 
-// CONTROLE DE VISIBILIDADE - Link "Ver detalhes" só para proprietária
+// Link "Ver detalhes" só para proprietária
 (function controlarLinkFinancas() {
   const cargo = sessionStorage.getItem("usuarioCargo");
   const linkDetalhes = document.getElementById("link-ver-detalhes");
@@ -232,30 +266,30 @@ function toggleLucro() {
   }
 })();
 
-// BOTÃO WHATSAPP - ENVIA AGENDAMENTOS DO DIA PARA A CARMEM
+// BOTÃO WHATSAPP flutuante — envia resumo do dia
 const btnWhatsHome = document.querySelector(".btn-whats");
 if (btnWhatsHome) {
   btnWhatsHome.onclick = function() {
     const hoje = hojeFormatado();
     const agendamentosHoje = agendamentosDados.filter(a => a.data === hoje);
-    
+
     if (agendamentosHoje.length === 0) {
       alert("Nenhum agendamento para hoje.");
       return;
     }
-    
+
     let msg = `*RESUMO DE AGENDAMENTOS - ${hoje}*\n\n`;
     agendamentosHoje.forEach(a => {
       msg += `${a.hora} - ${a.nome} - ${a.servico}\n`;
     });
     msg += `\nTotal: ${agendamentosHoje.length} agendamento(s)`;
-    
+
     const telefoneCarmem = "5561998015647";
     window.open(`https://wa.me/${telefoneCarmem}?text=${encodeURIComponent(msg)}`, "_blank");
   };
 }
 
-// Inicializa 
+// Inicializa
 mostrarData();
 saudacao();
 carregarPerfil();

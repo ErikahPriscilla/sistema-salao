@@ -1,10 +1,26 @@
 /* Tabela - fonte menor para caber no celular */
 .agend-tabela th,
 .agend-tabela td {
-  font-size: 0.85rem;     
-  padding: 12px 8px;       
-  text-align: left;       
+  font-size: 0.75rem;
+  padding: 10px 8px;
+  text-align: left;
   vertical-align: middle;
+}
+
+/* Data e Serviço centralizados */
+.agend-tabela th:nth-child(4),
+.agend-tabela td:nth-child(4),
+.agend-tabela th:nth-child(6),
+.agend-tabela td:nth-child(6) {
+  text-align: center;
+}
+
+/* Serviço: quebra linha se for nome longo no celular */
+@media (max-width: 767px) {
+  .agend-tabela td:nth-child(6) {
+    white-space: normal;
+    word-break: break-word;
+  }
 }
 
 /* Rodapé com os botões em escadinha */
@@ -18,11 +34,11 @@
 
 /* Larguras decrescentes criam o efeito escadinha */
 .agend-escada-1 {
-  min-width: 210px;
+  min-width: 180px;
 }
 
 .agend-escada-2 {
-  min-width: 150px;
+  min-width: 130px;
 }
 
 .agend-escada-3 {
@@ -94,55 +110,63 @@
   background: var(--cream);
   color: var(--rose-gold-dark);
 }
-/* Faz o sobrenome pular para baixo se não couber no celular */
+/* Nome: quebra no celular se necessário, mas não no PC */
 .col-nome-alinhado {
-  text-align: left !important; 
-  white-space: normal !important; 
+  text-align: left !important;
+  white-space: normal !important;
   vertical-align: middle;
   line-height: 1.2;
-  max-width: 90px;  
+  max-width: 90px;
   word-wrap: break-word;
 }
-/* Mantém o número de telefone reto na linha sem quebrar */
-.col-tel-fixo {
+
+/* No PC: nome fica completo em uma linha só */
+@media (min-width: 768px) {
+  .col-nome-alinhado {
+    white-space: nowrap !important;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  /* Título centralizado */
+  .tela-header { position: relative; }
+  .tela-header .btn-voltar { position: absolute; left: 20px; }
+  .tela-titulo { flex: 1; text-align: center; }
+}
+
+/* Data: dia/mês em cima, ano embaixo no celular */
+.celula-data {
   white-space: nowrap;
+  line-height: 1.3;
 }
-/* Faz o ano ficar embaixo do dia/mês */
-.col-data-empilhada {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start; 
-  line-height: 1.1;
-  font-weight: 500;
+.quebra-ano {
+  display: inline;
 }
-/* Estilo do ano embaixo */
-.ano-abaixo {
-  font-size: 0.68rem;
-  opacity: 0.7;
-  font-weight: 400;
-}
-/* No computador a barra aparece normal */
 .barra-pc {
   display: inline;
 }
-.quebra-ano {
-  margin-left: 0; /* No PC o ano fica colado na barra */
-}
-
-/* SÓ NO CELULAR */
-@media (max-width: 480px) {
-  .celula-data {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  /* A barra some para o ano ficar sozinho embaixo */
+@media (max-width: 767px) {
   .barra-pc {
     display: none;
   }
   .quebra-ano {
-    font-size: inherit;
-    line-height: 1;
+    display: block;
+    font-size: 0.78rem;
+    color: var(--text-soft);
   }
 }
+
+/* WhatsApp discreto ao lado do serviço — pequeno e delicado */
+.btn-whats-item {
+  color: var(--rose-gold-dark);
+  font-size: 0.78rem !important;
+  text-decoration: none;
+  opacity: 0.5;
+  transition: opacity 0.15s, transform 0.15s;
+  flex-shrink: 0;
+  line-height: 1;
+  vertical-align: middle;
+  margin-left: 4px;
+}
+.btn-whats-item:hover  { opacity: 1; transform: scale(1.15); }
+.btn-whats-item:active { transform: scale(0.9); }

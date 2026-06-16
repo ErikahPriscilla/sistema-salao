@@ -255,3 +255,22 @@ if (formAtualizar) {
     }
   });
 }
+// PERMISSÕES — só a proprietária acessa esta tela
+(function aplicarPermissoes() {
+  const cargo = sessionStorage.getItem("usuarioCargo");
+  if (cargo !== "proprietaria") {
+    window.location.href = "../index-home/home.html";
+  }
+})();
+
+// TOAST — exibe notificação flutuante no rodapé
+function mostrarToast(mensagem, tipo) {
+  const toast = document.getElementById("toastServico");
+  if (!toast) return;
+  toast.textContent = mensagem;
+  toast.className = "toast-sistema toast-visivel " + (tipo === "erro" ? "toast-erro" : "toast-sucesso");
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => {
+    toast.classList.remove("toast-visivel");
+  }, 3000);
+}

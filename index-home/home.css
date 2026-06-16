@@ -17,13 +17,23 @@
   color: var(--rose-gold-dark);        /* cor rosê */
   font-size: 3rem;                   /* maior que o "Espaço" */
 }
-/* GRID - dois cards lado a lado COM ALTURA FIXA */
+/* GRID - dois cards lado a lado COM ALTURA E LARGURA IGUAIS */
 .cards-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  align-items: stretch;
   gap: 14px;
-  padding: 6px 20px 100px;
+  padding: 16px 20px 100px;
   animation: fadeUp 0.6s 0.15s ease both;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+/* Garante que os dois cards ocupam exatamente a mesma largura */
+.cards-grid .card-info {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 /* Card base  */
 .card-info {
@@ -34,8 +44,10 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  height: 340px;
-  overflow-y: auto;
+  /* Altura igual: o grid com align-items:stretch já força isso.
+     Sem min-height fixo para não forçar altura quando tem pouco conteúdo */
+  height: 100%;
+  box-sizing: border-box;
 }
 /* Cabeçalho do card */
 .card-info-header {
@@ -78,34 +90,44 @@
 }
 .card-item {
   display: flex;
-  align-items: flex-start; 
-  gap: 12px;
-  padding: 8px 0;
+  align-items: center;   /* hora, nome e ícone na mesma linha */
+  gap: 6px;              /* era 12px - reduzido para aproximar hora do nome */
+  padding: 6px 0;
   border-bottom: 1px solid var(--border);
 }
 .card-item-hora {
   font-size: 0.7rem;
   font-weight: 700;
   color: var(--rose-gold-dark);
-  min-width: 55px;
+  min-width: 38px;
+  flex-shrink: 0;
 }
 
 .card-item-texto {
   flex: 1;
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  flex-direction: column;   /* nome em cima, serviço embaixo */
+  gap: 1px;
 }
 
 .card-item-nome {
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   color: var(--text);
-  font-weight: 500;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;      /* nome fica em linha, não quebra */
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .card-item-servico {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   color: var(--text-soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 1;
+  min-width: 0;
 }
 .card-item-vazio {
   list-style: none;
@@ -182,6 +204,10 @@
     font-weight: 400;
   }
 }
+
+#listaHome .card-item-nome::after {
+  content: "" !important;
+}
 /* Data e hora abaixo da saudação - centralizada */
 .data-hora-home {
   font-family: "Jost", sans-serif;    /* fonte padrão */
@@ -231,8 +257,255 @@
   .card-link {
     font-size: 0.88rem;
   }
-  /* Cards mais altos para comportar o texto maior */
+  /* Cards gêmeos no PC */
   .card-info {
-    height: 380px;
+    height: 100%;
+    min-height: 280px;
   }
+}
+
+/* WhatsApp no card — ícone pequeno e discreto, sem borda nem fundo */
+.btn-whats-item {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--rose-gold-dark); /* cor do sistema em vez do verde WhatsApp */
+  font-size: 0.95rem;
+  padding: 0;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: transform 0.15s, opacity 0.15s;
+  opacity: 0.75;
+}
+.btn-whats-item:hover  { opacity: 1; transform: scale(1.2); }
+.btn-whats-item:active { transform: scale(0.9); }
+
+/* Esconde o botão WhatsApp flutuante na home */
+.phone .btn-whats {
+  display: none !important;
+}
+
+/* Linha superior do item: hora + nome + ícone WhatsApp */
+.card-item-linha {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  flex: 1;
+  min-width: 0;
+  flex-wrap: nowrap; /* nunca quebra linha */
+}
+
+/* Nome dentro da linha - não quebra, corta com reticências */
+.card-item-linha .card-item-nome {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.card-item-linha .card-item-nome::after {
+  content: "" !important;
+}
+
+/* Ícone WhatsApp como link cor do sistema */
+a.btn-whats-item {
+  margin-left: auto;
+  color: var(--rose-gold-dark);
+  font-size: 0.85rem !important;
+  text-decoration: none;
+  opacity: 0.7;
+  transition: opacity 0.15s, transform 0.15s;
+  flex-shrink: 0;
+  line-height: 1;
+}
+a.btn-whats-item:hover  { opacity: 1; transform: scale(1.2); }
+a.btn-whats-item:active { transform: scale(0.9); }
+
+#listaHome .card-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--border);
+  /* overflow hidden garante que nada vaze para fora da área com borda */
+  overflow: hidden;
+}
+
+/* Linha de cima: hora + nome + WhatsApp — tudo dentro da borda */
+#listaHome .card-item-linha {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  min-width: 0;
+}
+
+/* Nome: mostra primeiro nome + sobrenome, corta o resto com ... */
+#listaHome .card-item-nome {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+#listaHome .card-item-nome::after {
+  content: "" !important;
+}
+
+/* Serviço fica na segunda linha, alinhado com o nome (não com a hora) */
+#listaHome .card-item-servico {
+  font-size: 0.68rem;
+  color: var(--text-soft);
+  padding-left: 44px; /* alinha com o nome — 38px da hora + 6px do gap */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* Garante que fica dentro do card-item (área rosa) */
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Remove o nowrap do nome dentro do card de lucro */
+#listaLucro .card-item-nome {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+}
+
+.lucro-valor {
+  margin: 2px 0 4px !important;
+}
+
+/* Quantidade de serviços embaixo do nome  */
+#listaLucro .card-item-servico {
+  display: block;
+}
+
+/* Garante que o card-item do lucro seja coluna para a quantidade ficar embaixo do nome */
+#listaLucro .card-item {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Aproxima o R$ 800,00 */
+.lucro-valor {
+  margin: 0 0 2px !important;
+  padding: 0 !important;
+}
+
+#listaLucro {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* Espaço equilibrado entre o valor total etc... */
+.lucro-valor {
+  margin: 0 0 8px !important;
+}
+
+#listaLucro {
+  margin-top: 0 !important;
+}
+
+.lucro-valor {
+  margin: 0 0 4px !important;
+}
+
+/* PC - todos em linha */
+@media (min-width: 768px) {
+  /* card-item vira flex row no PC */
+  #listaHome .card-item {
+    flex-direction: row;
+    align-items: center;
+    gap: 0;
+    padding: 7px 0;
+  }
+
+  /* card-item-linha: contém hora + nome, tamanho fixo */
+  #listaHome .card-item-linha {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  /* Nome: tamanho fixo */
+  #listaHome .card-item-nome {
+    max-width: 150px;
+    flex-shrink: 0;
+  }
+
+  #listaHome .card-item-nome::after {
+    content: " ·" !important;
+    color: var(--text-soft);
+    font-weight: 400;
+    margin-left: 4px;
+  }
+
+  #listaHome .card-item-servico {
+    font-size: 0.78rem;
+    color: var(--text-soft);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+    min-width: 0;
+    padding-left: 6px;
+    display: block !important;
+  }
+
+  /* WhatsApp no final, após o serviço — esconde o que está dentro da linha (mobile) */
+  #listaHome .card-item-linha a.btn-whats-item {
+    display: none !important;
+  }
+
+  /* WhatsApp desktop: aparece no final depois do serviço */
+  #listaHome a.btn-whats-item.btn-whats-desktop {
+    display: inline-flex !important;
+    margin-left: 6px;
+    flex-shrink: 0;
+  }
+
+  #listaLucro .card-item {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 0;
+  }
+  #listaLucro .card-item-linha {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  #listaLucro .card-item-servico {
+    display: inline !important;
+    font-size: 0.78rem;
+    color: var(--text-soft);
+  }
+}
+
+/* Mobile: whats fica na card-item-linha */
+.btn-whats-mobile  { display: inline-flex; }
+.btn-whats-desktop { display: none; }
+
+@media (min-width: 768px) {
+  .btn-whats-mobile  { display: none; }
+  .btn-whats-desktop { display: inline-flex; margin-left: 8px; flex-shrink: 0; }
+}
+
+/* · centralizado verticalmente no PC */
+#listaHome .card-item-nome::after {
+  vertical-align: middle;
+  line-height: 1;
 }

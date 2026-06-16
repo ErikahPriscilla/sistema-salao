@@ -320,12 +320,12 @@ body {
 .btn-excluir {
   border: none;
   border-radius: var(--radius-md);
-  padding: 10px 20px;
+  padding: 8px 12px;
   cursor: pointer;
   font-family: "Jost", sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
-  color: #a34747;
+  color: #8f2f2f;
   background: #fdeaea;
   transition: background 0.2s, opacity 0.2s;
   display: flex;
@@ -338,9 +338,6 @@ body {
 .btn-excluir:disabled {
   opacity: 0.4;
   cursor: not-allowed;
-}
-.admin-only {
-  display: none;
 }
 /* CAMPOS DE FORMULÁRIO - Envolvam o label e input com class="field" */
 .field {

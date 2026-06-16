@@ -63,6 +63,22 @@ function validarECadastrar() {
     return;
   }
 
+  // Validação do CPF — exige exatamente 11 dígitos
+  const cpfNums = cpf.replace(/\D/g, "");
+  if (cpfNums.length !== 11) {
+    msg.textContent = "CPF inválido. Digite todos os 11 dígitos. Ex: 000.000.000-00";
+    msg.classList.add("show", "erro");
+    return;
+  }
+
+  // Validação do telefone - exige DD + 9 + 8 dígitos (11 no total)
+  const telNums = telefone.replace(/\D/g, "");
+  if (telNums.length !== 11 || telNums[2] !== "9") {
+    msg.textContent = "Telefone inválido. Digite DD + 9 + 8 dígitos. Ex: (61) 99999-0000";
+    msg.classList.add("show", "erro");
+    return;
+  }
+
   const dados = {
     nome: nome,
     cpf: cpf,
@@ -107,3 +123,11 @@ document.querySelectorAll('input[id*="cpf"], input[name*="cpf"]').forEach(functi
     this.value = v;
   });
 });
+
+// PERMISSÕES — só a proprietária acessa esta tela
+(function aplicarPermissoes() {
+  const cargo = sessionStorage.getItem("usuarioCargo");
+  if (cargo !== "proprietaria") {
+    window.location.href = "../index-home/home.html";
+  }
+})();

@@ -1,7 +1,4 @@
-/* FUNCIONARIOS.CSS - Estilos específicos da tela de Funcionários.
-   Modal, field, form-btns, btn-acao, btn-excluir — no base.css!*/
-
-/* ÁREA DE AÇÕES: botão "Novo Funcionário" + campo de pesquisa */
+/*  botões em cima, pesquisar embaixo */
 .clientes-acoes {
   padding: 12px 20px 0;
   display: flex;
@@ -10,19 +7,17 @@
   gap: 8px;
 }
 
-/* Agrupa os botões de ação lado a lado */
 .clientes-btns {
   display: flex;
   gap: 8px;
 }
 
-/* CAMPO DE PESQUISA */
+/* PESQUISA */
 .clientes-pesquisa {
   position: relative;
   width: 260px;
 }
 
-/* Ícone de lupa posicionado dentro do campo de pesquisa */
 .pesquisa-icone {
   position: absolute;
   top: 50%;
@@ -32,7 +27,6 @@
   font-size: 0.85rem;
 }
 
-/* Estilo do input de pesquisa */
 .input-pesquisa {
   width: 100%;
   border: 1.5px solid var(--border);
@@ -50,13 +44,12 @@
   color: var(--text-soft);
 }
 
-/* Borda rose gold ao focar no campo de pesquisa */
 .input-pesquisa:focus {
   border-color: var(--rose-gold);
   box-shadow: 0 0 0 4px rgba(212, 161, 152, 0.14);
 }
 
-/* RODAPÉ — botões Atualizar e Excluir abaixo da tabela */
+/* RODAPÉ */
 .clientes-rodape {
   padding: 16px 20px 90px;
   display: flex;
@@ -65,21 +58,202 @@
   align-items: flex-start;
 }
 
-/* TABELA DE FUNCIONÁRIOS — alinhamento centralizado em todas as células.
-   Garante que CPF, Telefone e Nascimento fiquem no centro da coluna,
-   igual aos outros campos. text-align: center centraliza o conteúdo. */
-.clientes-tabela td,
+/* TABELA */
+.clientes-tabela-wrap {
+  padding: 14px 20px 0;
+  overflow-x: auto;
+}
+
+.clientes-tabela {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+.clientes-tabela thead tr {
+  background: linear-gradient(135deg, #f5dcd8, #eecbc5);
+}
+
 .clientes-tabela th {
-  text-align: center;
-  vertical-align: middle;
-  padding: 10px 8px;
-}
-
-.clientes-tabela .col-nome {
   text-align: left;
+  padding: 10px 8px;
+  font-family: "Jost", sans-serif;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text);
+  white-space: nowrap;
 }
 
-.clientes-tabela .col-check {
+.col-check {
+  width: 32px;
+  text-align: center !important;
+}
+
+.clientes-tabela tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+}
+
+.clientes-tabela tbody tr:hover {
+  background: var(--cream);
+}
+
+.clientes-tabela td {
+  padding: 10px 8px;
+  color: var(--text);
+  vertical-align: middle;
+}
+
+/* nome */
+.col-nome {
+  white-space: nowrap;
+}
+
+/* Bolinha de status */
+.status-bolinha {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  margin-right: 6px;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+.status-bolinha.ativo {
+  background: #7bbf8a;
+}
+
+.status-bolinha.inativo {
+  background: #c5b8b4;
+}
+
+/* Linha inativa */
+.cliente-inativo td {
+  opacity: 0.45;
+}
+
+.tabela-vazia {
   text-align: center;
-  width: 36px;
+  padding: 24px 0;
+  font-size: 0.85rem;
+  color: var(--text-soft);
+  font-style: italic;
+}
+
+/* MOBILE */
+@media (max-width: 767px) {
+  .col-nome {
+    white-space: normal;
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+  }
+
+  .col-nome .status-bolinha {
+    margin-top: 4px;
+    flex-shrink: 0;
+  }
+
+  .nome-texto {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1.35;
+  }
+
+  .nome-primeiro {
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .nome-resto {
+    color: var(--text-soft);
+  }
+
+  .nome-resto:empty {
+    display: none;
+  }
+}
+
+/* PC */
+@media (min-width: 768px) {
+  .clientes-tabela-wrap {
+    max-width: none;
+    width: 100%;
+    padding: 14px 20px 0;
+  }
+
+  .clientes-tabela {
+    width: 100%;
+  }
+
+  .clientes-acoes {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px 20px 0;
+    max-width: none;
+  }
+
+  .clientes-pesquisa {
+    width: 260px;
+  }
+
+  .clientes-rodape {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 16px 20px 40px;
+    max-width: none;
+  }
+
+  .tela-header {
+    position: relative;
+  }
+
+  .tela-header .btn-voltar {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .tela-titulo {
+    text-align: center;
+  }
+}
+/* TOAST */
+.toast-cl {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  padding: 11px 24px;
+  font-family: "Jost", sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+  box-shadow: var(--shadow);
+  z-index: 300;
+  opacity: 0;
+  white-space: nowrap;
+  transition: transform 0.35s, opacity 0.3s;
+}
+.toast-cl.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+/* Larguras mínimas dos botões do rodapé */
+/* Larguras mínimas dos botões do rodapé — só no PC */
+@media (min-width: 768px) {
+  .clientes-rodape .btn-acao {
+    justify-content: flex-start;
+    width: auto;
+  }
 }

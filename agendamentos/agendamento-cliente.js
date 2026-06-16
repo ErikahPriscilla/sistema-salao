@@ -63,15 +63,55 @@ function agendar() {
   msg.className = "msg";
   msg.textContent = "";
 
-  if (!nome || !tel || !data || !hora || !servico || !func) {
-    msg.textContent = "Preencha todos os campos para agendar.";
+  // Nome obrigatório
+  if (!nome) {
+    msg.textContent = "Por favor, informe seu nome.";
     msg.classList.add("show", "erro");
+    document.getElementById("nomeCliente").focus();
     return;
   }
 
+  // Telefone obrigatório
+  if (!tel) {
+    msg.textContent = "Por favor, informe seu telefone.";
+    msg.classList.add("show", "erro");
+    document.getElementById("telCliente").focus();
+    return;
+  }
+
+  // Telefone: obrigatório DD (2 dígitos) + 9 + 8 dígitos = 11 dígitos no total
   const nums = tel.replace(/\D/g, "");
-  if (nums.length < 10 || nums.length > 11) {
-    msg.textContent = "Telefone deve ter entre 10 e 11 dígitos.";
+  if (nums.length !== 11) {
+    msg.textContent = "Telefone incompleto. Digite DDD + 9 + 8 dígitos. Ex: (61) 99999-0000";
+    msg.classList.add("show", "erro");
+    document.getElementById("telCliente").focus();
+    return;
+  }
+  if (nums[2] !== "9") {
+    msg.textContent = "O número deve começar com 9 após o DDD. Ex: (61) 99999-0000";
+    msg.classList.add("show", "erro");
+    document.getElementById("telCliente").focus();
+    return;
+  }
+
+  // Demais campos obrigatórios
+  if (!data) {
+    msg.textContent = "Selecione a data do agendamento.";
+    msg.classList.add("show", "erro");
+    return;
+  }
+  if (!hora) {
+    msg.textContent = "Selecione o horário do agendamento.";
+    msg.classList.add("show", "erro");
+    return;
+  }
+  if (!servico) {
+    msg.textContent = "Selecione o serviço desejado.";
+    msg.classList.add("show", "erro");
+    return;
+  }
+  if (!func) {
+    msg.textContent = "Selecione o colaborador.";
     msg.classList.add("show", "erro");
     return;
   }
@@ -134,7 +174,7 @@ document.addEventListener("keydown", function(e) {
   if (e.key === "Escape") fecharModal();
 });
 
-// Acessibilidade — ativa/desativa e persiste no sessionStorage
+// Acessibilidade - ativa/desativa e persiste no sessionStorage
 function toggleAcessibilidade() {
   const ativa = document.body.classList.toggle("acessibilidade-ativa");
   sessionStorage.setItem("acessibilidade", ativa ? "1" : "0");
@@ -147,10 +187,12 @@ function toggleAcessibilidade() {
   }
 })();
 
-// Scroll — sobe o botão quando está no topo
+// Scroll - sobe o botão quando está no topo
 const btnAcess = document.getElementById("btnAcess");
 function atualizarBotao() {
-  if (window.scrollY < 80) {
+  // No PC a tela é maior, usa threshold maior para o botão subir
+  const threshold = window.innerWidth >= 768 ? 140 : 80;
+  if (window.scrollY < threshold) {
     btnAcess.classList.add("no-topo");
   } else {
     btnAcess.classList.remove("no-topo");

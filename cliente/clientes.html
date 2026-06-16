@@ -86,8 +86,8 @@
               <input type="checkbox" id="checkTodos" onchange="toggleTodos(this)" />
             </th>
             <th>Nome</th>
-            <th>Número</th>
-            <th>Observações</th>
+            <th class="text-center">Número</th>
+            <th class="text-center">Observações</th>
             <th></th> 
           </tr>
         </thead>
@@ -99,13 +99,13 @@
     </section>
 
     <div class="clientes-rodape">
-      <button class="btn-acao agend-escada-1" id="btnAtualizar"
+      <button class="btn-acao btn-acao-secundario agend-escada-1" id="btnAtualizar"
               onclick="abrirModalAtualizar()" disabled>
         <i class="fa-solid fa-pen-to-square"></i> Atualizar
       </button>
-      <button class="btn-excluir agend-escada-2" id="btnExcluir"
-              onclick="abrirModalAcoes()" disabled>
-        <i class="fa-solid fa-trash"></i> Excluir
+      <button class="btn-acao agend-escada-2" id="btnAlterarStatus"
+              onclick="abrirModalStatus()" disabled>
+        <i class="fa-solid fa-circle-half-stroke"></i> Alterar Status
       </button>
     </div>
 
@@ -158,56 +158,31 @@
     </div>
   </div>
 
-  <!-- modal: ações (ativar/desativar + excluir) -->
-  <div class="modal-overlay" id="modalAcoes">
+  <!-- modal: alterar status do cliente -->
+  <div class="modal-overlay" id="modalStatus">
     <div class="modal">
       <div class="modal-header">
-        <h3 id="modalAcoesSubtitulo"></h3>
-        <button class="modal-fechar" onclick="fecharModal('modalAcoes')">
+        <h3 id="modalStatusTitulo">Alterar Status</h3>
+        <button class="modal-fechar" onclick="fecharModal('modalStatus')">
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
-      <div class="modal-footer" style="padding:0">
-        <button id="btnAcaoStatus" onclick="confirmarStatus()"
-          style="width:100%; background:none; border:none; border-top:1px solid var(--border); padding:14px 20px; text-align:left; font-family:'Jost',sans-serif; font-size:0.9rem; cursor:pointer; display:flex; align-items:center; gap:8px; color:var(--text-soft);">
-        </button>
-        <button onclick="confirmarExclusao()" class="admin-only"
-            style="width:100%; background:none; border:none; border-top:1px solid var(--border); padding:14px 20px; text-align:left; font-family:'Jost',sans-serif; font-size:0.9rem; cursor:pointer; display:flex; align-items:center; gap:8px; color:#b85c5c;">
-            <i class="fa-solid fa-trash"></i> Excluir
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal: Confirmar Exclusão -->
-  <div class="modal-overlay" id="modalConfirmarExcluir">
-    <div class="modal">
-      <div class="modal-header">
-        <h3>Confirmar Exclusão</h3>
-        <button class="modal-fechar" onclick="fecharModal('modalConfirmarExcluir')">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-      </div>
-      <div class="modal-body" style="text-align:center; padding:20px;">
-        <div style="font-size:2.4rem; color:#b85c5c; margin-bottom:12px;">
-          <i class="fa-solid fa-trash"></i>
-        </div>
-        <p id="modalExcluirTexto"
-           style="font-family:'Jost',sans-serif; font-size:0.95rem; color:var(--text); line-height:1.6; margin:0;"></p>
-      </div>
-      <div class="modal-footer">
-        <div class="form-btns" style="width:100%;">
-          <button type="button" class="btn-form-limpar" onclick="fecharModal('modalConfirmarExcluir')">
+      <div class="modal-body" style="text-align:center; padding:24px 20px;">
+        <p id="modalStatusTexto"
+           style="font-family:'Jost',sans-serif; font-size:0.95rem; color:var(--text); line-height:1.6; margin:0 0 20px;"></p>
+        <div class="form-btns">
+          <button type="button" class="btn-form-limpar" onclick="fecharModal('modalStatus')">
             <i class="fa-solid fa-xmark"></i> Cancelar
           </button>
-          <button type="button" class="btn-excluir" onclick="executarExclusao()" style="flex:1;">
-            <i class="fa-solid fa-trash"></i> Excluir
+          <button type="button" class="btn-form-cadastrar" id="btnConfirmarStatus" onclick="confirmarStatus()">
+            <i class="fa-solid fa-circle-check"></i> <span id="btnStatusLabel">Confirmar</span>
           </button>
         </div>
       </div>
     </div>
   </div>
 
+  <div id="toastCl" class="toast-cl"></div>
   <script src="clientes.js"></script>
 </body>
 </html>

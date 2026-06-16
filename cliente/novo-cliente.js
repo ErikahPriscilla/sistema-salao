@@ -64,8 +64,8 @@ function cadastrarCliente() {
 
   const numerosApenas = telefone.replace(/\D/g, "");
 
-  if (numerosApenas.length < 10 || numerosApenas.length > 11) {
-    msg.textContent = "Digite um telefone válido (10 ou 11 dígitos).";
+  if (numerosApenas.length !== 11 || numerosApenas[2] !== "9") {
+    msg.textContent = "Telefone inválido. Digite DD + 9 + 8 dígitos. Ex: (61) 99999-0000";
     msg.classList.add("erro");
     return;
   }

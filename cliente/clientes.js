@@ -1,3 +1,23 @@
+
+// Erro inline vermelho abaixo do campo — não trava o mobile como alert()
+function mostrarErroModal(inputId, mensagem) {
+  const anterior = document.getElementById("erroModal_" + inputId);
+  if (anterior) anterior.remove();
+  const input = document.getElementById(inputId);
+  if (!input) return;
+  const div = document.createElement("div");
+  div.id = "erroModal_" + inputId;
+  div.style.cssText = "color:#c0392b;font-size:0.78rem;margin-top:4px;font-family:'Jost',sans-serif;";
+  div.textContent = mensagem;
+  input.parentNode.appendChild(div);
+  input.style.borderColor = "#c0392b";
+  input.focus();
+  input.addEventListener("input", function limpar() {
+    div.remove();
+    input.style.borderColor = "";
+    input.removeEventListener("input", limpar);
+  }, { once: true });
+}
 // Menu lateral
 function abrirMenu() {
   document.getElementById("sidebar").classList.add("aberta");
@@ -11,7 +31,7 @@ document.addEventListener("keydown", function (e) {
   if (e.key === "Escape") {
     fecharMenu();
     fecharModal("modalAtualizar");
-    fecharModal("modalAcoes");
+    fecharModal("modalStatus");
   }
 });
 
@@ -113,10 +133,13 @@ function renderizarTabela(lista) {
        </td>
       <td class="col-nome">
         <span class="status-bolinha ${c.ativo ? 'ativo' : 'inativo'}"></span>
-        ${c.nome}
+        <span class="nome-texto">
+          <span class="nome-primeiro">${c.nome.trim().split(' ')[0]}</span>
+          <span class="nome-resto">${c.nome.trim().split(' ').slice(1).join(' ')}</span>
+        </span>
       </td>
-      <td class="col-nowrap">${c.numero}</td>
-      <td class="col-obs">${c.obs || "—"}</td>
+      <td class="col-nowrap text-center">${c.numero}</td>
+      <td class="col-obs text-center">${c.obs || "—"}</td>
       <td class="col-nowrap" style="text-align:center; width:40px;">
         <button class="btn-share" onclick="enviarLinkAgendamento(${c.id})" 
                 style="background:transparent; border:none; color:var(--text-soft); cursor:pointer; opacity:0.5;"
@@ -155,12 +178,12 @@ function atualizarBotoes() {
   const marcados = document.querySelectorAll(".check-linha:checked").length;
   const checkTodos = document.getElementById("checkTodos");
   if (checkTodos) checkTodos.checked = total > 0 && marcados === total;
-  
-  const btnAtualizar = document.getElementById("btnAtualizar");
-  const btnExcluir = document.getElementById("btnExcluir");
-  
-  if (btnAtualizar) btnAtualizar.disabled = marcados !== 1;
-  if (btnExcluir) btnExcluir.disabled = marcados === 0;
+
+  const btnAtualizar    = document.getElementById("btnAtualizar");
+  const btnAlterarStatus = document.getElementById("btnAlterarStatus");
+
+  if (btnAtualizar)    btnAtualizar.disabled    = marcados !== 1;
+  if (btnAlterarStatus) btnAlterarStatus.disabled = marcados !== 1;
 }
 
 // Pega o cliente selecionado
@@ -187,20 +210,19 @@ function salvarAtualizacao() {
   let numeroRaw = document.getElementById("editNumero").value.trim();
   let numeros = numeroRaw.replace(/\D/g, '');
   
-  if (numeros.length < 10 || numeros.length > 11) {
-    alert("Número de telefone inválido. Deve ter 10 ou 11 dígitos.");
+  if (numeros.length !== 11) {
+    mostrarErroModal("editNumero", "Telefone inválido. Ex: (61) 99999-0000");
+    return;
+  }
+
+  // Exige 9 após o DDD
+  if (numeros[2] !== "9") {
+    mostrarErroModal("editNumero", "Número deve começar com 9 após o DDD. Ex: (61) 99999-0000");
     return;
   }
   
-  // Formata o número completo
-  let numeroFormatado;
-  if (numeros.length === 11) {
-    // (XX) XXXXX-XXXX
-    numeroFormatado = `(${numeros.substring(0,2)}) ${numeros.substring(2,7)}-${numeros.substring(7,11)}`;
-  } else {
-    // (XX) XXXX-XXXX
-    numeroFormatado = `(${numeros.substring(0,2)}) ${numeros.substring(2,6)}-${numeros.substring(6,10)}`;
-  }
+  // Formata (XX) XXXXX-XXXX
+  const numeroFormatado = `(${numeros.substring(0,2)}) ${numeros.substring(2,7)}-${numeros.substring(7,11)}`;
   
   c.nome   = document.getElementById("editNome").value.trim()   || c.nome;
   c.numero = numeroFormatado;
@@ -210,61 +232,28 @@ function salvarAtualizacao() {
   renderizarTabela(clientes);
 }
 
-// Modal ações
-function abrirModalAcoes() {
-  const marcados = document.querySelectorAll(".check-linha:checked").length;
-  if (marcados === 0) return;
-
-  const btnStatus  = document.getElementById("btnAcaoStatus");
-  const subtitulo  = document.getElementById("modalAcoesSubtitulo");
-
-  if (marcados === 1) {
-    const c = getClienteSelecionado();
-    if (btnStatus) {
-      btnStatus.style.display = "flex";
-      if (c.ativo) {
-        btnStatus.innerHTML = '<i class="fa-solid fa-ban"></i> Desativar';
-      } else {
-        btnStatus.innerHTML = '<i class="fa-solid fa-circle-check"></i> Ativar';
-      }
-    }
-    if (subtitulo) subtitulo.textContent = c.nome;
-  } else {
-    if (btnStatus) btnStatus.style.display = "none";
-    if (subtitulo) subtitulo.textContent = `${marcados} clientes selecionados`;
-  }
-
-  document.getElementById("modalAcoes").classList.add("aberto");
+// Modal alterar status
+function abrirModalStatus() {
+  const c = getClienteSelecionado();
+  if (!c) return;
+  const novoStatus = c.ativo ? "Desativar" : "Ativar";
+  const icone      = c.ativo ? "fa-ban" : "fa-circle-check";
+  document.getElementById("modalStatusTitulo").textContent = `${novoStatus} cliente`;
+  document.getElementById("modalStatusTexto").textContent  =
+    `Deseja ${novoStatus.toLowerCase()} ${c.nome}?`;
+  document.getElementById("btnStatusLabel").textContent = novoStatus;
+  document.getElementById("btnConfirmarStatus").querySelector("i").className =
+    `fa-solid ${icone}`;
+  document.getElementById("modalStatus").classList.add("aberto");
 }
 
 function confirmarStatus() {
   const c = getClienteSelecionado();
   if (!c) return;
   c.ativo = !c.ativo;
-  fecharModal("modalAcoes");
+  fecharModal("modalStatus");
   renderizarTabela(clientes);
-}
-
-function confirmarExclusao() {
-  const ids = Array.from(document.querySelectorAll(".check-linha:checked"))
-    .map(cb => parseInt(cb.dataset.id));
-  const qtd = ids.length;
-  window._idsParaExcluir = ids;
-  const modalTexto = document.getElementById("modalExcluirTexto");
-  if (modalTexto) {
-    modalTexto.textContent = `Excluir ${qtd} cliente${qtd > 1 ? "s" : ""}? Esta ação não pode ser desfeita.`;
-  }
-  fecharModal("modalAcoes");
-  document.getElementById("modalConfirmarExcluir").classList.add("aberto");
-}
-
-function executarExclusao() {
-  const ids = window._idsParaExcluir || [];
-  clientes = clientes.filter(c => !ids.includes(c.id));
-  const checkTodos = document.getElementById("checkTodos");
-  if (checkTodos) checkTodos.checked = false;
-  fecharModal("modalConfirmarExcluir");
-  renderizarTabela(clientes);
+  mostrarToast(c.ativo ? "✓ Cliente ativado!" : "Cliente desativado.", "sucesso");
 }
 
 // Fechar modal
@@ -310,15 +299,21 @@ if (formAtualizar) {
   });
 }
 
+// TOAST
+function mostrarToast(mensagem, tipo) {
+  const toast = document.getElementById("toastCl");
+  if (!toast) return;
+  toast.textContent = mensagem;
+  toast.style.borderLeft = tipo === "erro" ? "4px solid #dc3545" : "4px solid #7bbf8a";
+  toast.style.color = tipo === "erro" ? "#a34747" : "#2f7a47";
+  toast.classList.add("show");
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => toast.classList.remove("show"), 3000);
+}
+
 // Permissões de botões
 (function controlarBotoesCliente() {
-  const cargo = sessionStorage.getItem("usuarioCargo");
-  if (cargo !== "proprietaria") {
-    const btnExcluir = document.getElementById("btnExcluir");
-    if (btnExcluir) btnExcluir.style.display = "none";
-    const btnAcoes = document.querySelector(".btn-acoes, [onclick='abrirModalAcoes()']");
-    if (btnAcoes) btnAcoes.style.display = "none";
-  }
+  // Alterar Status disponível para todos os cargos
 })();
 
 // Inicializa

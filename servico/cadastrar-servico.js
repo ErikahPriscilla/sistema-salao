@@ -97,3 +97,11 @@ function fecharModal() {
 }
 
 window.addEventListener("load", carregarPerfil);
+
+// PERMISSÕES — só a proprietária acessa esta tela
+(function aplicarPermissoes() {
+  const cargo = sessionStorage.getItem("usuarioCargo");
+  if (cargo !== "proprietaria") {
+    window.location.href = "../index-home/home.html";
+  }
+})();

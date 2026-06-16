@@ -83,9 +83,9 @@
               <input type="checkbox" id="checkTodos" onchange="toggleTodos(this)" />
             </th>
             <th>Nome</th>
-            <th>CPF</th>
-            <th>Telefone</th>
-            <th>Nascimento</th>
+            <th class="text-center">CPF</th>
+            <th class="text-center">Telefone</th>
+            <th class="text-center">Nascimento</th>
           </tr>
         </thead>
         <tbody id="tabelaCorpo"></tbody>
@@ -95,14 +95,19 @@
       </p>
     </section>
 
+    <!-- RODAPÉ: botões Atualizar, Lançar Folga, Alterar Status (escadinha menor→maior) -->
     <div class="clientes-rodape">
-      <button class="btn-acao agend-escada-1" id="btnAtualizar"
+      <button class="btn-acao btn-acao-secundario agend-escada-1" id="btnAtualizar"
               onclick="abrirModalAtualizar()" disabled>
         <i class="fa-solid fa-pen-to-square"></i> Atualizar
       </button>
-      <button class="btn-excluir agend-escada-2" id="btnExcluir"
-              onclick="confirmarExclusao()" disabled>
-        <i class="fa-solid fa-trash"></i> Excluir
+      <button class="btn-acao agend-escada-2" id="btnLancarFolga"
+              onclick="abrirModalFolga()" disabled>
+        <i class="fa-solid fa-calendar-xmark"></i> Lançar Folga
+      </button>
+      <button class="btn-acao agend-escada-3" id="btnAlterarStatus"
+              onclick="abrirModalStatus()" disabled>
+        <i class="fa-solid fa-circle-half-stroke"></i> Alterar Status
       </button>
     </div>
 
@@ -150,33 +155,65 @@
     </div>
   </div>
 
-  <!-- MODAL EXCLUSÃO  -->
-  <div class="modal-overlay" id="modalConfirmarExclusaoFunc">
+  <!-- Modal: Alterar Status do Funcionário -->
+  <div class="modal-overlay" id="modalStatus">
     <div class="modal">
-      <div class="modal-body" style="text-align:center; padding:32px 24px;">
-        <i class="fa-solid fa-triangle-exclamation"
-           style="font-size:2.2rem; color:#e07070; display:block; margin-bottom:12px;"></i>
-        <h3 style="font-family:'Cormorant Garamond',serif; font-size:1.3rem; margin-bottom:8px;">
-          Confirmar exclusão
-        </h3>
-        <p id="textoConfirmacaoFunc"
-           style="font-size:0.87rem; color:var(--text-soft); margin-bottom:24px;">
-          Tem certeza que deseja excluir este funcionário?
-        </p>
-        <div style="display:flex; gap:10px;">
-          <button class="btn-form-limpar" style="flex:1;"
-                  onclick="fecharModal('modalConfirmarExclusaoFunc')">
-            Cancelar
+      <div class="modal-header">
+        <h3 id="modalStatusTitulo">Alterar Status</h3>
+        <button class="modal-fechar" onclick="fecharModal('modalStatus')">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body" style="text-align:center; padding:24px 20px;">
+        <p id="modalStatusTexto"
+           style="font-family:'Jost',sans-serif; font-size:0.95rem; color:var(--text); line-height:1.6; margin:0 0 20px;"></p>
+        <div class="form-btns">
+          <button type="button" class="btn-form-limpar" onclick="fecharModal('modalStatus')">
+            <i class="fa-solid fa-xmark"></i> Cancelar
           </button>
-          <button class="btn-excluir" style="flex:1; justify-content:center;"
-                  onclick="executarExclusaoFunc()">
-            <i class="fa-solid fa-trash"></i> Excluir
+          <button type="button" class="btn-form-cadastrar" id="btnConfirmarStatus" onclick="confirmarStatus()">
+            <i class="fa-solid fa-circle-check"></i> <span id="btnStatusLabel">Confirmar</span>
           </button>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- Modal: Lançar Folga -->
+  <div class="modal-overlay" id="modalFolga">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Lançar Folga</h3>
+        <button class="modal-fechar" onclick="fecharModal('modalFolga')">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p id="modalFolgaNome"
+           style="font-family:'Jost',sans-serif; font-size:0.9rem; color:var(--text-soft); margin-bottom:16px;"></p>
+        <div class="field">
+          <label for="folgaData">Data da Folga</label>
+          <input type="date" id="folgaData" name="folgaData" />
+        </div>
+        <div class="field">
+          <label for="folgaMotivo">Motivo</label>
+          <input type="text" id="folgaMotivo" name="folgaMotivo" placeholder="Ex: Folga semanal, Falta, Férias..." />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div class="form-btns" style="width:100%">
+          <button type="button" class="btn-form-limpar" onclick="fecharModal('modalFolga')">
+            <i class="fa-solid fa-xmark"></i> Cancelar
+          </button>
+          <button type="button" class="btn-form-cadastrar" onclick="confirmarFolga()">
+            <i class="fa-solid fa-calendar-xmark"></i> Lançar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toastFunc" class="toast-cl"></div>
   <script src="funcionario.js"></script>
 </body>
 </html>

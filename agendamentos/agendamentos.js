@@ -58,7 +58,7 @@ function datasDestaSemanaBR() {
 }
 const semana = datasDestaSemanaBR();
 
-// ========== CARREGA AGENDAMENTOS DO SESSIONSTORAGE (ou dados padrão) ==========
+//  CARREGA AGENDAMENTOS DO SESSIONSTORAGE (ou dados padrão)
 let agendamentos = (function() {
   const salvos = sessionStorage.getItem("agendamentos");
   if (salvos && salvos !== "[]") {
@@ -70,8 +70,11 @@ let agendamentos = (function() {
   }
   // Dados iniciais padrão
   return [
-    { id: 1, nome: "Gabrielle Lima", tel: "(61) 99845-3612", data: "16/05/2026", hora: "10:00", servico: "Escova" },
-    { id: 2, nome: "Zilda Brito Ferreira", tel: "(61) 98604-3187", data: "16/05/2026", hora: "14:30", servico: "Manicure" }
+    { id: 1, nome: "Gabrielle Lima",   tel: "(61) 99990-0001", data: "07/06/2026", hora: "09:00", servico: "Escova"          },
+    { id: 2, nome: "Zilda Brito",      tel: "(61) 99990-0002", data: "07/06/2026", hora: "10:30", servico: "Manicure"        },
+    { id: 3, nome: "Gabriel Santos",   tel: "(61) 99990-0004", data: "07/06/2026", hora: "11:00", servico: "Corte de Cabelo" },
+    { id: 4, nome: "Yan Cruz",         tel: "(61) 99990-0003", data: "07/06/2026", hora: "14:00", servico: "Corte Masculino" },
+    { id: 5, nome: "Guilherme Souza",  tel: "(61) 99990-0005", data: "07/06/2026", hora: "15:30", servico: "Corte e Barba"   }
   ];
 })();
 
@@ -115,9 +118,21 @@ function renderizarTabela() {
       </td>
       <td class="col-nome-alinhado">${a.nome}</td>
       <td class="col-nowrap text-center">${a.tel}</td>
-      <td class="celula-data">${dataComAnoIdentificado}</td>
-      <td class="col-nowrap">${a.hora}</td>
-      <td class="col-truncar">${a.servico}</td>
+      <td class="celula-data text-center">${dataComAnoIdentificado}</td>
+      <td class="col-nowrap text-center">${a.hora}</td>
+      <td class="col-nowrap text-center">${a.servico}</td>
+      <td style="text-align:center; width:40px;">
+        <a class="btn-whats-item"
+           href="https://wa.me/55${a.tel.replace(/\D/g,'')}"
+           target="_blank"
+           title="WhatsApp de ${a.nome}"
+           aria-label="WhatsApp de ${a.nome}"
+           style="color:var(--text-soft); opacity:0.5; font-size:0.9rem;"
+           onmouseover="this.style.opacity='1'"
+           onmouseout="this.style.opacity='0.5'">
+          <i class="fa-brands fa-whatsapp"></i>
+        </a>
+      </td>
     `;
     corpo.appendChild(tr);
   });
@@ -166,6 +181,14 @@ function abrirModalAtualizar() {
 
   const [d, m, a] = ag.data.split("/");
   document.getElementById("editData").value = `${a}-${m}-${d}`;
+  // Travar campo hora e data mínima igual ao novo agendamento
+  document.getElementById("editHora").min = "07:00";
+  document.getElementById("editHora").max = "18:00";
+  const hoje = new Date();
+  const dd = String(hoje.getDate()).padStart(2, "0");
+  const mm = String(hoje.getMonth() + 1).padStart(2, "0");
+  document.getElementById("editData").min = `${hoje.getFullYear()}-${mm}-${dd}`;
+
   document.getElementById("modalAtualizar").classList.add("aberto");
 }
 
@@ -173,44 +196,88 @@ function fecharModal() {
   document.getElementById("modalAtualizar").classList.remove("aberto");
 }
 
-// Máscara e trava de telefone no modal de atualizar
+// Máscara de telefone no modal de atualizar — formato (DD) 9XXXX-XXXX
 document.getElementById("editTel").addEventListener("input", function () {
   let v = this.value.replace(/\D/g, "");
   if (v.length > 11) v = v.slice(0, 11);
-  if (v.length <= 10) {
-    v = v.replace(/^(\d{2})(\d{4})(\d{0,4})/, "($1) $2-$3");
-  } else {
-    v = v.replace(/^(\d{2})(\d{5})(\d{0,4})/, "($1) $2-$3");
-  }
-  this.value = v;
+  if      (v.length <= 2)  this.value = v;
+  else if (v.length <= 7)  this.value = `(${v.slice(0,2)}) ${v.slice(2)}`;
+  else                     this.value = `(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`;
 });
 
 function salvarAtualizacao() {
-  const id = parseInt(document.querySelector(".check-linha:checked")?.dataset.id);
-  const nome = document.getElementById("editNome").value.trim();
-  const tel = document.getElementById("editTel").value.trim();
-  const hora = document.getElementById("editHora").value;
+  const id      = parseInt(document.querySelector(".check-linha:checked")?.dataset.id);
+  const nome    = document.getElementById("editNome").value.trim();
+  const tel     = document.getElementById("editTel").value.trim();
+  const hora    = document.getElementById("editHora").value;
   const servico = document.getElementById("editServico").value.trim();
-  const msg = document.getElementById("msgAtualizar");
+  const msg     = document.getElementById("msgAtualizar");
 
-  // Limpa mensagem anterior
-  msg.className = "msg";
+  msg.className   = "msg";
   msg.textContent = "";
 
-  // Validação de telefone
-  const numerosApenas = tel.replace(/\D/g, "");
-  if (numerosApenas.length < 10 || numerosApenas.length > 11) {
-    msg.textContent = "Digite um telefone válido (10 ou 11 dígitos).";
-    msg.classList.add("erro");
+  // Nome obrigatório
+  if (!nome) {
+    msg.textContent = "Nome é obrigatório.";
+    msg.classList.add("show", "erro");
+    document.getElementById("editNome").focus();
+    return;
+  }
+
+  // Telefone: DDD + 9 + 8 dígitos = 11 total
+  const telNumeros = tel.replace(/\D/g, "");
+  if (telNumeros.length !== 11) {
+    msg.textContent = "Telefone incompleto. Ex: (61) 99999-0000";
+    msg.classList.add("show", "erro");
+    document.getElementById("editTel").focus();
+    return;
+  }
+  if (telNumeros[2] !== "9") {
+    msg.textContent = "O número deve começar com 9 após o DDD. Ex: (61) 99999-0000";
+    msg.classList.add("show", "erro");
+    document.getElementById("editTel").focus();
     return;
   }
 
   const dataISO = document.getElementById("editData").value;
+
+  // Data não pode ser no passado
+  if (dataISO) {
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    const dataSel = new Date(dataISO + "T12:00");
+    if (dataSel < hoje) {
+      msg.textContent = "Selecione uma data a partir de hoje.";
+      msg.classList.add("show", "erro");
+      return;
+    }
+
+    // Dia da semana: só terça (2) a sábado (6)
+    const diaSemana = dataSel.getDay();
+    if (diaSemana === 0 || diaSemana === 1) {
+      msg.textContent = "O salão não funciona aos domingos e segundas. Escolha outro dia.";
+      msg.classList.add("show", "erro");
+      return;
+    }
+  }
+
+  // Horário: 07:00 às 18:00
+  if (hora) {
+    const [h, m] = hora.split(":").map(Number);
+    const minutos = h * 60 + m;
+    if (minutos < 7 * 60 || minutos > 18 * 60) {
+      msg.textContent = "O salão funciona das 07:00 às 18:00. Escolha um horário dentro desse período.";
+      msg.classList.add("show", "erro");
+      return;
+    }
+  }
+
   let dataBR = "";
   if (dataISO) {
     const [ano, mes, dia] = dataISO.split("-");
     dataBR = `${dia}/${mes}/${ano}`;
   }
+
   const idx = agendamentos.findIndex(a => a.id === id);
   if (idx !== -1) {
     agendamentos[idx] = { ...agendamentos[idx], nome, tel, data: dataBR, hora, servico };
